@@ -1,3 +1,10 @@
+Ideia: A cidade será um plano cartesiano, inicialmente 600x600 pontos, quando clicar o mouse sobre a cidade será criada uma emergencia médica.
+
+A Central de Emergencia é um agente que irá monitorar as emergencias, ela perguntará pra cada agente sua localização e status.
+Depois a Central irá eleger a ambulância disponível mais próxima e repassará o atendimento pra Ambulância.
+
+Ambulancia irá deslocar até o local e atender o paciente. Após o atendimento a ambulância fica livre pra atender outra emergência.
+
 Agentes:
   CentralEmergencia: A central de emergência é um agente centralizador das chamadas, fica ligado à uma cidade e sabe quem são os motoristas de ambulância contratados
   - 
