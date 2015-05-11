@@ -1,11 +1,11 @@
 Agentes:
-  Emergencia190: A central de emergência é um agente centralizador das chamadas, fica ligado à uma cidade e sabe quem são os motoristas de ambulância contratados
+  CentralEmergencia: A central de emergência é um agente centralizador das chamadas, fica ligado à uma cidade e sabe quem são os motoristas de ambulância contratados
   - 
-
-  Ambulancia: Representa cada ambulância em atividade, a propriedade name tem o nome do motorista contratado
+  Ambulancia: Representa cada ambulância em atividade, a propriedade name tem o nome do motorista contratado e é o que dá nome ao objeto
 
 Ambiente:
-  Cidade: É um objeto simples java com nome da cidade e os locais onde tem emergência para serem atendidas. Não sei se uma cidade deveria ser um agente também, não sei como representar um ambiente em JADE.
+
+  Cidade: É um objeto simples java com nome da cidade e os locais onde tem emergência para serem atendidas. Não sei se uma cidade deveria ser um agente também, não sei como representar um ambiente em JADE. O relacionamento entre Central e Cidade é de um para um.
 
   Emergencia: Representa cada objeto emergencia para ser atendidade, a cidade mantem a lista de emergencias pendentes. Quando a central pega a emergencia da lista de pendencias e vai pra lista de sendoAtendidadas. Após o agente o objeto de emrgencia é destruido. No futuro fazer com que a ambulancia leve o paciente para algum hospital na cidade.
 

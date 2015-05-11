@@ -17,5 +17,19 @@ public class Local {
 		return c;
 	}
 
+	public static Local parse(String content) {
+		if (content!=null)
+		{
+			 String[] s = content.split(";");
+			if (s.length==3&&s[0]=="LC")
+				return new Local(Integer.parseInt(s[1]),Integer.parseInt(s[2]));
+		}
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "LC;"+latitude+";"+longitude;
+	}
 }
  

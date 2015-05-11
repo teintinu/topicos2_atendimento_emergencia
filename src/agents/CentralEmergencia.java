@@ -1,7 +1,11 @@
 package agents;
 
+
 import java.util.ArrayList;
 
+import behaviours.VerificarSeHaEmergenciasSemAgente;
+import ontologia.Emergencia;
+import environment.Cidade;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -9,10 +13,8 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-import environment.Cidade;
-import environment.Emergencia;
 
-public class Emergencia190 extends Agent {
+public class CentralEmergencia extends Agent {
 	/**
 	 * 
 	 */
@@ -30,12 +32,14 @@ public class Emergencia190 extends Agent {
 			String nomeCidade = (String) args[0];
 			System.out.println("Registrando central de emergencia para cidade "
 					+ nomeCidade);
-			cidade = Cidade.registrarCentralDeEmergencia(nomeCidade, this);
+			cidade = Cidade.registrarCentralDeEmergencia(nomeCidade);
 		}
 
 		this.cidade = cidade;
 		if (cidade == null)
 			doDelete();
+		else 
+			new VerificarSeHaEmergenciasSemAgente(this, cidade);
 	}
 
 	@Override
@@ -51,14 +55,14 @@ public class Emergencia190 extends Agent {
 	public void novaEmergenciaMedica(Emergencia emergencia) {
 
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.setConversationId(ontologia.Acao.InformarDisponibilidade);
 		msg.setLanguage("English");
-		msg.setOntology(ontologia.AtendimentoEmergencia.NomeOntologia);
+		msg.setOntology(ontologia.OntologiaEmergencia.NOME);
+		msg.setConversationId(ontologia.Servico.AtenderEmergenciaMedica);
 		msg.setContent("Aconteceu um acidente");
 
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
-		sd.setType(ontologia.Servico.AtenderEmergencia);
+		sd.setType(ontologia.Servico.AtenderEmergenciaMedica);
 		template.addServices(sd);
 		try {
 			DFAgentDescription[] result = DFService.search(this, template);
