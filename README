@@ -1,12 +1,12 @@
+Ideia: A cidade, que é o ambiente, será um plano cartesiano, inicialmente com dimensão de 600x600. Quando clicar o mouse sobre a cidade será criada uma emergência médica.
+
+A cidade conta com uma Central de Emergência, que é um agente que irá monitorar as emergências. A Central enviará mensagens para os agentes responsáveis por atender as emergências, as Ambulâncias, para saber de cada agente a sua localização e status(livre/ocupado). 
+Depois, a Central irá eleger a Ambulância disponível mais próxima e repassará o atendimento para esta Ambulância. A Ambulância irá se deslocar até o local e atender o paciente. Após o atendimento, a Ambulância fica livre para atender outra Emergência.
+
 Agentes:
-  CentralEmergencia: A central de emergência é um agente centralizador das chamadas, fica ligado à uma cidade e sabe quem são os motoristas de ambulância contratados
-  - 
-  Ambulancia: Representa cada ambulância em atividade, a propriedade name tem o nome do motorista contratado e é o que dá nome ao objeto
+CentralEmergencia: A central de emergência é um agente centralizador das chamadas, fica ligado à uma cidade e sabe quem são os motoristas de ambulâncias contratados
+Ambulancia: Representa cada ambulância em atividade, a propriedade name tem o nome do motorista contratado e é o que dá nome ao objeto
 
 Ambiente:
-
-  Cidade: É um objeto simples java com nome da cidade e os locais onde tem emergência para serem atendidas. Não sei se uma cidade deveria ser um agente também, não sei como representar um ambiente em JADE. O relacionamento entre Central e Cidade é de um para um.
-
-  Emergencia: Representa cada objeto emergencia para ser atendidade, a cidade mantem a lista de emergencias pendentes. Quando a central pega a emergencia da lista de pendencias e vai pra lista de sendoAtendidadas. Após o agente o objeto de emrgencia é destruido. No futuro fazer com que a ambulancia leve o paciente para algum hospital na cidade.
-
-  
+Cidade: É uma classe que possui como atributo o nome da cidade e tem conhecimento dos locais onde há emergência para ser atendida. O relacionamento entre Central e Cidade é de um para um.
+Emergência: Representa cada objeto Emergencia, que deve ser atendida. A Cidade mantém duas listas: a lista de emergências pendentes e a lista de emergências sendo atendidas. Quando a Central atribui uma Emergência à uma Ambulância, ela retira tal Emergência da lista de 'pendências' e coloca na lista 'sendoAtendidas'. No futuro, fazer com que a Ambulância leve o paciente para algum hospital na Cidade.
