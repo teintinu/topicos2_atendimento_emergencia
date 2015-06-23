@@ -1,5 +1,10 @@
 package agents;
 
+import environment.Cidade;
+import environment.Endereco;
+import behaviours.ambulancia.ComunicacaoAmbulanciaCentral;
+import ontologia.entidades.Emergencia;
+import ontologia.status.AmbulanciaStatus;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -8,6 +13,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 public class Ambulancia extends Agent {
 	private AmbulanciaStatus status = AmbulanciaStatus.Livre;
+	private Endereco endereco;
+	
 	/**
 	 * 
 	 */
@@ -18,28 +25,28 @@ public class Ambulancia extends Agent {
 		System.out.println("Motorista de ambulância contratado: "
 				+ getAID().getLocalName()); 
 
+		endereco=new Endereco(getAID().getLocalName(), "ambulancia", Cidade.singleton.tamanhoLat/2, Cidade.singleton.tamanhoLong/2);
+		Cidade.singleton.mapa.add(endereco);
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
-		sd.setType(ontologia.Servico.AtenderEmergenciaMedica);
+		sd.setType(ontologia.Servicos.TransportarPacientes);
 		sd.setName("ambulancia: "+getAID().getLocalName());
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
-			statusLivre();
+			addBehaviour(new ComunicacaoAmbulanciaCentral());
+			setStatusLivre();
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 			doDelete();
 		}
 	}
 
-	private void statusLivre() {
-		System.out.println("Ambulância está livre e a postos");
-		addBehaviour(new VerificaHaEmergencias());
-	}
-
 	@Override
 	protected void takeDown() {
+		if (endereco!=null)
+		Cidade.singleton.mapa.remove(endereco);
 		System.out.println("Motorista de ambulância demitido: "
 				+ getAID().getLocalName());
 		try {
@@ -47,5 +54,23 @@ public class Ambulancia extends Agent {
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
+	}
+	
+	public AmbulanciaStatus getStatus() {
+		return status;
+	}
+	
+	public Endereco getEndereco() {
+		return endereco;
+	}
+
+	public void setStatusLivre() {
+		status=AmbulanciaStatus.Livre;
+		System.out.println(getAID().getLocalName()+": Ambulância está livre e a postos");		
+	}
+
+	public void setStatusBuscarPaciente(Emergencia e) {
+		status=AmbulanciaStatus.IndoAtenderBuscarPaciente;
+		System.out.println(getAID().getLocalName()+": Ambulância está indo buscar um paciente");
 	}
 }
