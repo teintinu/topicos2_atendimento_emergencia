@@ -1,4 +1,4 @@
-package behaviours.ambulancia;
+package behaviours.hospital;
 
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -9,37 +9,39 @@ import java.io.IOException;
 import ontologia.entidades.Emergencia;
 import ontologia.status.AmbulanciaStatus;
 import agents.Ambulancia;
+import agents.Hospital;
 
-public class ComunicacaoAmbulanciaCentral extends CyclicBehaviour {
+public class ComunicacaoHospital extends CyclicBehaviour {
 
 	@Override
 	public void action() {
 		ACLMessage msg = myAgent.receive();
 		if (msg != null) {
 			if (msg.getPerformative() == ACLMessage.CFP
-					&& ontologia.Servicos.TransportarPacientes.equals(msg
+					&& ontologia.Servicos.TratarPacientes.equals(msg
 							.getConversationId())) {
-				Ambulancia amb = (Ambulancia) myAgent;
+				Hospital hosp = (Hospital) myAgent;
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REFUSE);
-				if (amb.getStatus() == AmbulanciaStatus.Livre)
+				if (hosp.leitos_em_uso < hosp.qtde_leitos)
 					try {
-						reply.setContentObject(amb.endereco);
+						reply.setContentObject(hosp.endereco);
 						reply.setPerformative(ACLMessage.PROPOSE);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				myAgent.send(reply);
 			} else if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL
-					&& ontologia.Servicos.TransportarPacientes.equals(msg
+					&& ontologia.Servicos.TratarPacientes.equals(msg
 							.getConversationId())) {
-				Ambulancia amb = (Ambulancia) myAgent;
+				Hospital hosp = (Hospital) myAgent;
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REFUSE);
-				if (amb.getStatus() == AmbulanciaStatus.Livre)
+				if (hosp.leitos_em_uso < hosp.qtde_leitos)
 					try {
+						hosp.leitos_em_uso++;
 						Emergencia e = (Emergencia) msg.getContentObject();
-						reply.setContentObject(amb.endereco);
+						reply.setContentObject(hosp.endereco);
 						reply.setPerformative(ACLMessage.PROPOSE);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -48,6 +50,16 @@ public class ComunicacaoAmbulanciaCentral extends CyclicBehaviour {
 					}
 				myAgent.send(reply);
 			}
-		}
+		} else if (msg.getPerformative() == ACLMessage.INFORM)
+	{
+			try {
+				Emergencia e = (Emergencia) msg.getContentObject();
+				Hospital hosp = (Hospital) myAgent;
+				hosp.addBehaviour(new TrataPaciente(hosp, e, 2000));				
+			} catch (UnreadableException e) {
+				e.printStackTrace();
+			}
+	}
+		
 	}
 }

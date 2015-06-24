@@ -1,6 +1,7 @@
 package behaviours.central;
 
 import jade.core.AID;
+import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -12,21 +13,23 @@ import jade.lang.acl.UnreadableException;
 
 import java.io.IOException;
 
+import agents.CentralEmergencia;
+import behaviours.ambulancia.BuscarPaciente;
 import ontologia.entidades.Emergencia;
 import environment.Cidade;
 import environment.Objeto;
 
-public class GerenciamentoDeTransporteDePacientes extends Behaviour {
+public class AlocarAmbulancia extends Behaviour {
 
 	private AID ambulanciaMaisProxima;
 	private int menorDistancia;
 	private int repliesPending = 0;
 	private MessageTemplate mt;
-	private Passos passo = Passos.PegaEmergenciaDaFila;
+	private AmbulanciaPassos passo = AmbulanciaPassos.PegaEmergenciaDaFila;
 	private Emergencia emergencia;
 	private Cidade cidade;
 
-	public GerenciamentoDeTransporteDePacientes(Cidade cidade) {
+	public AlocarAmbulancia(Cidade cidade) {
 		this.cidade = cidade;
 		this.emergencia = null;
 	}
@@ -39,7 +42,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 			if (emergencia == null)
 				block();
 			else
-				passo = Passos.PerguntaEnderecoDasAmbulancias;
+				passo = AmbulanciaPassos.PerguntaEnderecoDasAmbulancias;
 		case PerguntaEnderecoDasAmbulancias:
 			System.out.println("Procurando ambulancia para emergencia");
 			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
@@ -64,7 +67,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 			mt = MessageTemplate.and(MessageTemplate.MatchConversationId(ontologia.Servicos.TransportarPacientes),
 					MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 			
-			passo = Passos.RecebeEnderecoDasAmbulancias;
+			passo = AmbulanciaPassos.RecebeEnderecoDasAmbulancias;
 			break;
 		case RecebeEnderecoDasAmbulancias:
 			ACLMessage reply = myAgent.receive(mt);
@@ -94,7 +97,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 				}
 				repliesPending--;
 				if (repliesPending <= 0)
-					passo = Passos.EncaminhaEmergenciaParaAmbulancia;
+					passo = AmbulanciaPassos.EncaminhaEmergenciaParaAmbulancia;
 			} else {
 				block();
 			}
@@ -112,7 +115,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 				mt = MessageTemplate.and(
 						MessageTemplate.MatchConversationId(ontologia.Servicos.TransportarPacientes),
 						MessageTemplate.MatchInReplyTo(order.getReplyWith()));
-				passo = Passos.TrataRespostaDaAmbulancia;
+				passo = AmbulanciaPassos.TrataRespostaDaAmbulancia;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -121,6 +124,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 			reply = myAgent.receive(mt);
 			if (reply != null) {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
+					
 					System.out.println(ambulanciaMaisProxima.getLocalName()
 							+ " informou que irá atender a emergencia");
 					this.emergencia = null;
@@ -128,7 +132,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 					System.out.println(ambulanciaMaisProxima.getLocalName()
 							+ " informou que nao irá pode atender a emergencia, tentando outra");
 				}
-				passo = Passos.PegaEmergenciaDaFila;
+				passo = AmbulanciaPassos.PegaEmergenciaDaFila;
 			} else {
 				block();
 			}

@@ -73,7 +73,7 @@ public class Ambulancia extends Agent {
 				+ ": Ambulância está indo buscar um paciente");
 	}
 	
-	public void setStatusTransportarPacienteParaHospital(Emergencia e) {
+	public void setStatusTransportarPacienteParaHospital() {
 		status = AmbulanciaStatus.TransportandoPacienteParaHospital;
 		System.out.println(getAID().getLocalName()
 				+ ": Ambulância está levando paciente para hospital");

@@ -1,8 +1,10 @@
 package behaviours.ambulancia;
 
+import behaviours.central.AlocarLeito;
 import jade.core.behaviours.Behaviour;
 import ontologia.entidades.Emergencia;
 import agents.Ambulancia;
+import agents.CentralEmergencia;
 import environment.Cidade;
 import environment.Objeto;
 
@@ -25,7 +27,7 @@ public class BuscarPaciente extends Behaviour {
 		Objeto e = Cidade.singleton.map_get(emergencia.endereco);
 		chegou = amb.walkTo(e);
 		if (chegou)
-			ambulancia.addBehaviour(new TransportarPaciente(emergencia));
+			Cidade.central.addBehaviour(new AlocarLeito(ambulancia, emergencia));
 	}
 
 	@Override

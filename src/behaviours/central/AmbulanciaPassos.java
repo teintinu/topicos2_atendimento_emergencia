@@ -1,6 +1,6 @@
 package behaviours.central;
 
-public enum Passos {
+public enum AmbulanciaPassos {
 	PegaEmergenciaDaFila, PerguntaEnderecoDasAmbulancias, RecebeEnderecoDasAmbulancias, EncaminhaEmergenciaParaAmbulancia, TrataRespostaDaAmbulancia
 
 }

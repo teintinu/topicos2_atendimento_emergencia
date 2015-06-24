@@ -3,11 +3,13 @@ package environment;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import agents.CentralEmergencia;
 import ontologia.entidades.Emergencia;
 
 public class Cidade {
 
 	public static Cidade singleton;
+	public static CentralEmergencia central;
 
 	public final String nome;
 	public final int tamanhoLat;

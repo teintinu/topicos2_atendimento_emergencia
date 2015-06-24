@@ -62,4 +62,11 @@ public class Objeto implements Serializable {
 		return lat_delta==0 && long_delta==0;
 	}
 
+	public void copy(Objeto target) {
+		synchronized (target) {
+			this.latitude=target.latitude;
+			this.longitude=target.longitude;
+		}		
+	}
+
 }
