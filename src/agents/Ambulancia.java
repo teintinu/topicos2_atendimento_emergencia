@@ -1,20 +1,19 @@
 package agents;
 
-import environment.Cidade;
-import environment.Endereco;
-import behaviours.ambulancia.ComunicacaoAmbulanciaCentral;
-import ontologia.entidades.Emergencia;
-import ontologia.status.AmbulanciaStatus;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import ontologia.entidades.Emergencia;
+import ontologia.status.AmbulanciaStatus;
+import behaviours.ambulancia.ComunicacaoAmbulanciaCentral;
+import environment.Cidade;
 
 public class Ambulancia extends Agent {
 	private AmbulanciaStatus status = AmbulanciaStatus.Livre;
-	private Endereco endereco;
-	
+	public Integer endereco;
+
 	/**
 	 * 
 	 */
@@ -23,15 +22,17 @@ public class Ambulancia extends Agent {
 	@Override
 	protected void setup() {
 		System.out.println("Motorista de ambulância contratado: "
-				+ getAID().getLocalName()); 
+				+ getAID().getLocalName());
 
-		endereco=new Endereco(getAID().getLocalName(), "ambulancia", Cidade.singleton.tamanhoLat/2, Cidade.singleton.tamanhoLong/2);
-		Cidade.singleton.mapa.add(endereco);
+		endereco = Cidade.singleton.map_create(getAID().getLocalName(),
+				"ambulancia", Cidade.singleton.tamanhoLat / 2,
+				Cidade.singleton.tamanhoLong / 2);
+
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType(ontologia.Servicos.TransportarPacientes);
-		sd.setName("ambulancia: "+getAID().getLocalName());
+		sd.setName("ambulancia: " + getAID().getLocalName());
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
@@ -45,8 +46,8 @@ public class Ambulancia extends Agent {
 
 	@Override
 	protected void takeDown() {
-		if (endereco!=null)
-		Cidade.singleton.mapa.remove(endereco);
+		if (endereco != null)
+			Cidade.singleton.map_remove(endereco);
 		System.out.println("Motorista de ambulância demitido: "
 				+ getAID().getLocalName());
 		try {
@@ -55,22 +56,26 @@ public class Ambulancia extends Agent {
 			fe.printStackTrace();
 		}
 	}
-	
+
 	public AmbulanciaStatus getStatus() {
 		return status;
 	}
-	
-	public Endereco getEndereco() {
-		return endereco;
-	}
 
 	public void setStatusLivre() {
-		status=AmbulanciaStatus.Livre;
-		System.out.println(getAID().getLocalName()+": Ambulância está livre e a postos");		
+		status = AmbulanciaStatus.Livre;
+		System.out.println(getAID().getLocalName()
+				+ ": Ambulância está livre e a postos");
 	}
 
-	public void setStatusBuscarPaciente(Emergencia e) {
-		status=AmbulanciaStatus.IndoAtenderBuscarPaciente;
-		System.out.println(getAID().getLocalName()+": Ambulância está indo buscar um paciente");
+	public void setStatusBuscarPaciente() {
+		status = AmbulanciaStatus.IndoAtenderBuscarPaciente;
+		System.out.println(getAID().getLocalName()
+				+ ": Ambulância está indo buscar um paciente");
+	}
+	
+	public void setStatusTransportarPacienteParaHospital(Emergencia e) {
+		status = AmbulanciaStatus.TransportandoPacienteParaHospital;
+		System.out.println(getAID().getLocalName()
+				+ ": Ambulância está levando paciente para hospital");
 	}
 }

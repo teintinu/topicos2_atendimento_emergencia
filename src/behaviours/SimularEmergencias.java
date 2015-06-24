@@ -1,10 +1,9 @@
 package behaviours;
 
-import ontologia.entidades.Emergencia;
-import environment.Cidade;
-import agents.CentralEmergencia;
-import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
+import ontologia.entidades.Emergencia;
+import agents.CentralEmergencia;
+import environment.Cidade;
 
 public class SimularEmergencias extends TickerBehaviour{
 

@@ -1,12 +1,5 @@
 package behaviours.central;
 
-import java.io.IOError;
-import java.io.IOException;
-
-import environment.Cidade;
-import environment.Endereco;
-import ontologia.entidades.Emergencia;
-import ontologia.status.AmbulanciaStatus;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
@@ -16,6 +9,12 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+
+import java.io.IOException;
+
+import ontologia.entidades.Emergencia;
+import environment.Cidade;
+import environment.Objeto;
 
 public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 
@@ -42,8 +41,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 			else
 				passo = Passos.PerguntaEnderecoDasAmbulancias;
 		case PerguntaEnderecoDasAmbulancias:
-			System.out.println("Procurando ambulancia para emergencia: "
-					+ emergencia.getProtocolo());
+			System.out.println("Procurando ambulancia para emergencia");
 			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 			cfp.setConversationId(ontologia.Servicos.TransportarPacientes);
 			DFAgentDescription template = new DFAgentDescription();
@@ -73,14 +71,13 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 			if (reply != null) {
 				System.out.println("Proposta de "
 						+ reply.getSender().getLocalName()
-						+ " para atender a emergencia: "
-						+ emergencia.getProtocolo());
+						+ " para atender a emergencia");
 				if (reply.getPerformative() == ACLMessage.PROPOSE) {
 					try {
-						Endereco endereco = (Endereco) reply.getContentObject();
+						Objeto endereco = cidade.map_get(  (int) reply.getContentObject());
 						if (endereco != null) {
-							int distancia = endereco.distancia(emergencia
-									.getEndereco());
+							int distancia = endereco.distancia(cidade.map_get(emergencia
+									.endereco));
 							if (ambulanciaMaisProxima == null
 									|| distancia < menorDistancia) {
 								ambulanciaMaisProxima = reply.getSender();
@@ -88,8 +85,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 							}
 							System.out.println("Distância de "
 									+ reply.getSender().getLocalName()
-									+ " até a emergencia: "
-									+ emergencia.getProtocolo() + " = "
+									+ " até a emergencia"+ " distancia= "
 									+ distancia);
 						}
 					} catch (UnreadableException e) {
@@ -106,8 +102,7 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 		case EncaminhaEmergenciaParaAmbulancia:
 			System.out.println("Aceitando a proposta de "
 					+ ambulanciaMaisProxima.getLocalName()
-					+ " para atender a emergencia: "
-					+ emergencia.getProtocolo());
+					+ " para atender a emergencia");
 			ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 			order.addReceiver(ambulanciaMaisProxima);
 			try {
@@ -127,15 +122,11 @@ public class GerenciamentoDeTransporteDePacientes extends Behaviour {
 			if (reply != null) {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
 					System.out.println(ambulanciaMaisProxima.getLocalName()
-							+ " informou que irá atender a emergencia: "
-							+ emergencia.getProtocolo());
+							+ " informou que irá atender a emergencia");
 					this.emergencia = null;
 				} else {
 					System.out.println(ambulanciaMaisProxima.getLocalName()
-							+ " informou que irá pode atender a emergencia: "
-							+ emergencia.getProtocolo() + " tentando outra");
-					System.out
-							.println("Attempt failed: requested book already sold.");
+							+ " informou que nao irá pode atender a emergencia, tentando outra");
 				}
 				passo = Passos.PegaEmergenciaDaFila;
 			} else {

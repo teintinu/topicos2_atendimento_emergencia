@@ -1,10 +1,24 @@
 package web;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.StringTokenizer;
 import java.util.Date;
+import java.util.StringTokenizer;
+
+import environment.Cidade;
 
 /**
  * Java HTTP Server
@@ -14,8 +28,7 @@ import java.util.Date;
  * @author Dustin R. Callaway
  */
 public class HttpServer implements Runnable {
-	// static constants
-	// HttpServer root is the current directory
+	static final String WEB_ROOT = ".";
 	static final int PORT = 8080; // default port
 
 	// instance variables
@@ -60,41 +73,23 @@ public class HttpServer implements Runnable {
 	 */
 	public void run() {
 		BufferedReader in = null;
-		PrintWriter out = null;
 		String url = null;
 
+		OutputStream out=null;
 		try {
-			// get character input stream from client
 			in = new BufferedReader(new InputStreamReader(
 					connect.getInputStream(), StandardCharsets.UTF_8));
-			// get character output stream to client (for headers)
-			out = new PrintWriter(new OutputStreamWriter(
-					connect.getOutputStream(), StandardCharsets.UTF_8), true);
+			out = connect.getOutputStream();
 
-			// get first line of request from client
 			String input = in.readLine();
-			// create StringTokenizer to parse request
 			StringTokenizer parse = new StringTokenizer(input);
-			// parse out method
 			String method = parse.nextToken().toUpperCase();
-			// parse out file requested
 			url = parse.nextToken().toLowerCase();
 
-			String response = getResponse(url).toString();
-
-			FileInputStream fileIn = null;
-			// create byte array to store file data
-			byte[] fileData = new byte[response.length()];
-
-			// send HTTP headers
-			out.println("HTTP/1.0 200 OK");
-			out.println("Server: Java HTTP Server 1.0");
-			out.println("Date: " + new Date());
-			out.println("Content-type: text/csv");
-			out.println("Content-length: " + response.length());
-			out.println(); // blank line between headers and content
-			out.println(response);
-			out.flush(); // flush character output stream buffer
+			if (url.matches("^mapa$"))
+				renderMapa(out);
+			else
+				serverFile(url, out);
 
 		} catch (IOException ioe) {
 			System.err.println("Server Error: " + ioe);
@@ -105,18 +100,89 @@ public class HttpServer implements Runnable {
 		}
 	}
 
-	private StringBuilder getResponse(String url) {
-		StringBuilder ret = new StringBuilder();
-		if (url.matches("^mapa$"))
-			mapa(ret);
-		else
-			ret.append("INVALIDO");
-		return ret;
+	private void serverFile(String fileRequested, OutputStream outputStream) {
+		PrintWriter out = new PrintWriter(outputStream);
+		BufferedOutputStream dataOut = new BufferedOutputStream(outputStream);
+
+		if (fileRequested.endsWith("/")) {
+			// append default file name to request
+			fileRequested += "index.html";
+		}
+
+		// create file object
+		File file = new File(WEB_ROOT, fileRequested);
+		// get length of file
+		int fileLength = (int) file.length();
+
+		// get the file's MIME content type
+		String content = getContentType(fileRequested);
+		try {
+			FileInputStream fileIn = null;
+			// create byte array to store file data
+			byte[] fileData = new byte[fileLength];
+
+			try {
+				// open input stream from file
+				fileIn = new FileInputStream(file);
+				// read file into byte array
+				fileIn.read(fileData);
+			} finally {
+				close(fileIn); // close file input stream
+			}
+
+			// send HTTP headers
+			out.println("HTTP/1.0 200 OK");
+			out.println("Server: Java HTTP Server 1.0");
+			out.println("Date: " + new Date());
+			out.println("Content-type: " + content);
+			out.println("Content-length: " + file.length());
+			out.println(); // blank line between headers and content
+			out.flush(); // flush character output stream buffer
+
+			dataOut.write(fileData, 0, fileLength); // write file
+			dataOut.flush(); // flush binary output stream buffer
+
+		} catch (Exception e) {
+			System.err.println("Server Error: " + e);
+		}
 	}
 
-	private void mapa(StringBuilder ret) {
-		// TODO Auto-generated method stub
+	private void renderMapa(OutputStream outputStream) {
+		StringBuilder ret = new StringBuilder();
+		Cidade.singleton.toCSV(ret);
+		outputString(outputStream, "text/csv", ret.toString());
+	}
 
+	private void outputString(OutputStream outputStream, String mime,
+			String response) {
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(outputStream,
+				StandardCharsets.UTF_8), true);
+		out.println("HTTP/1.0 200 OK");
+		out.println("Server: Java HTTP Server 1.0");
+		out.println("Date: " + new Date());
+		out.println("Content-type: " + mime);
+		out.println("Content-length: " + response.length());
+		out.println(); // blank line between headers and content
+		out.println(response);
+		out.flush();
+		out.close();
+	}
+
+	private String getContentType(String fileRequested) {
+		if (fileRequested.endsWith(".htm") || fileRequested.endsWith(".html")) {
+			return "text/html";
+		} else if (fileRequested.endsWith(".css")) {
+			return "text/css";
+		} else if (fileRequested.endsWith(".js")) {
+			return "application/ecmascript";
+		} else if (fileRequested.endsWith(".gif")) {
+			return "image/gif";
+		} else if (fileRequested.endsWith(".jpg")
+				|| fileRequested.endsWith(".jpeg")) {
+			return "image/jpeg";
+		} else {
+			return "text/plain";
+		}
 	}
 
 	public void close(Object stream) {

@@ -5,7 +5,6 @@ import jade.core.Agent;
 import behaviours.SimularEmergencias;
 import behaviours.central.GerenciamentoDeTransporteDePacientes;
 import environment.Cidade;
-import environment.Endereco;
 
 public class CentralEmergencia extends Agent {
 	/**
@@ -13,7 +12,7 @@ public class CentralEmergencia extends Agent {
 	 */
 	private static final long serialVersionUID = 6158354184040721305L;
 	private Cidade cidade;
-	private Endereco local;
+	private Integer endereco;
 
 	@Override
 	protected void setup() {
@@ -35,15 +34,14 @@ public class CentralEmergencia extends Agent {
 		Cidade.singleton= new Cidade(nomeCidade, 600, 600);
 		cidade = Cidade.singleton;
 
-		local=new Endereco("Central", "central", cidade.tamanhoLat / 2,cidade.tamanhoLong / 2);
-		cidade.mapa.add(local);
+		endereco=cidade.map_create("Central", "central", cidade.tamanhoLat / 2,cidade.tamanhoLong / 2);	
 		
-		new SimularEmergencias(this, cidade);
+		addBehaviour(		new SimularEmergencias(this, cidade));
 		this.cidade = cidade;
 		if (cidade == null)
 			doDelete();
 		else 
-				new GerenciamentoDeTransporteDePacientes(cidade);			
+			addBehaviour(new GerenciamentoDeTransporteDePacientes(cidade));			
 	}
 
 	@Override
@@ -52,7 +50,11 @@ public class CentralEmergencia extends Agent {
 				.println("Central de emergencia encerrou as atividades na cidade: "
 						+ getAID().getLocalName());
 		if (cidade != null)
+		{
+			if (endereco!=null)
+				cidade.map_remove(endereco);
 			Cidade.singleton=null;
+		}
 		cidade = null;
 	}
 }
