@@ -14,7 +14,8 @@ public class BuscarPaciente extends Behaviour {
 	private Emergencia emergencia;
 	private boolean chegou;
 
-	public BuscarPaciente(Emergencia e) {
+	public BuscarPaciente(Ambulancia amb, Emergencia e) {
+		super(amb);
 		ambulancia = (Ambulancia) myAgent;
 		emergencia = e;
 		chegou = false;
@@ -26,8 +27,10 @@ public class BuscarPaciente extends Behaviour {
 		Objeto amb = Cidade.singleton.map_get(ambulancia.endereco);
 		Objeto e = Cidade.singleton.map_get(emergencia.endereco);
 		chegou = amb.walkTo(e);
-		if (chegou)
+		if (chegou) {
+			System.out.println("Ambulancia chegou no local da emergencia");
 			Cidade.central.addBehaviour(new AlocarLeito(ambulancia, emergencia));
+		}
 	}
 
 	@Override

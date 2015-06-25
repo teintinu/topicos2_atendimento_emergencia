@@ -15,6 +15,13 @@ public class Objeto implements Serializable {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder s=new StringBuilder();
+		serialize(s);
+		return s.toString();
+	}
 
 	public void serialize(StringBuilder s) {
 		s.append(descricao);

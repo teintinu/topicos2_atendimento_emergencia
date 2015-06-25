@@ -12,25 +12,26 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 public class Hospital extends Agent {
 
 	public Integer endereco;
-	private String nome;
-	public int leitos_em_uso=0, qtde_leitos;
+	public int leitos_em_uso = 0, qtde_leitos;
 
 	@Override
 	protected void setup() {
 		Object[] args = getArguments();
-		if (args != null && args.length == 4) {
-			this.nome = (String) args[0];
-			int lat = Integer.parseInt((String) args[1]);
-			int lng = Integer.parseInt((String) args[2]);
-			this.qtde_leitos = Integer.parseInt((String) args[3]);
-			endereco = Cidade.singleton.map_create(nome, "hospital", lat, lng);
-			System.out.println("Abrindo hospital: " + nome);
+		if (args != null && args.length == 3) {
+			int lat = Integer.parseInt((String) args[0]);
+			int lng = Integer.parseInt((String) args[1]);
+			this.qtde_leitos = Integer.parseInt((String) args[2]);
+			endereco = Cidade.singleton.map_create(getAID().getLocalName(),
+					"hospital", lat, lng);
+			System.out.println("Abrindo hospital: " + getAID().getLocalName());
 		} else {
 			System.out
-					.println("Hospital precisa nome, latitude, longitude e qtde_leitos");
+					.println("Hospital precisa latitude, longitude e qtde_leitos. "
+							+ args.length);
 			doDelete();
+			return;
 		}
-				
+
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -44,13 +45,12 @@ public class Hospital extends Agent {
 			fe.printStackTrace();
 			doDelete();
 		}
-		
+
 	}
 
 	@Override
 	protected void takeDown() {
-		if (nome != null)
-			System.out.println("Fechando hospital: " + nome);
+		System.out.println("Fechando hospital: " + getAID().getLocalName());
 		if (endereco != null)
 			Cidade.singleton.map_remove(endereco);
 	}

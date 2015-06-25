@@ -24,6 +24,9 @@ public class SimularEmergencias extends TickerBehaviour{
 
 	@Override
 	protected void onTick() {
-		new Emergencia(cidade, "Random"+(id++), cidade.tamanhoLat/2, cidade.tamanhoLong/2);
+		int lat=(int) (Math.random()*cidade.tamanhoLat);
+		int lng=(int) (Math.random()*cidade.tamanhoLong);
+		Emergencia e = new Emergencia(cidade, "Random"+(id++), lat, lng);
+		System.out.println("Simulando emergencia: "+e.toString());		
 	}
 }

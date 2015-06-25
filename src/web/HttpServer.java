@@ -86,7 +86,7 @@ public class HttpServer implements Runnable {
 			String method = parse.nextToken().toUpperCase();
 			url = parse.nextToken().toLowerCase();
 
-			if (url.matches("^mapa$"))
+			if ("./mapa".equals(url))
 				renderMapa(out);
 			else
 				serverFile(url, out);

@@ -39,6 +39,7 @@ public class ComunicacaoAmbulanciaCentral extends CyclicBehaviour {
 				if (amb.getStatus() == AmbulanciaStatus.Livre)
 					try {
 						Emergencia e = (Emergencia) msg.getContentObject();
+						amb.addBehaviour(new BuscarPaciente(amb, e)); 
 						reply.setContentObject(amb.endereco);
 						reply.setPerformative(ACLMessage.PROPOSE);
 					} catch (IOException e) {

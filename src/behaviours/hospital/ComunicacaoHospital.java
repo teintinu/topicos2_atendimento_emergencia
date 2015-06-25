@@ -49,17 +49,16 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 						e1.printStackTrace();
 					}
 				myAgent.send(reply);
+			} else if (msg.getPerformative() == ACLMessage.INFORM) {
+				try {
+					Emergencia e = (Emergencia) msg.getContentObject();
+					Hospital hosp = (Hospital) myAgent;
+					hosp.addBehaviour(new TrataPaciente(hosp, e, 2000));
+				} catch (UnreadableException e) {
+					e.printStackTrace();
+				}
 			}
-		} else if (msg.getPerformative() == ACLMessage.INFORM)
-	{
-			try {
-				Emergencia e = (Emergencia) msg.getContentObject();
-				Hospital hosp = (Hospital) myAgent;
-				hosp.addBehaviour(new TrataPaciente(hosp, e, 2000));				
-			} catch (UnreadableException e) {
-				e.printStackTrace();
-			}
-	}
-		
+		}
+
 	}
 }

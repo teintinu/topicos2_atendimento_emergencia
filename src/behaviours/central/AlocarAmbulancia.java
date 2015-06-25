@@ -37,12 +37,15 @@ public class AlocarAmbulancia extends Behaviour {
 	public void action() {
 		switch (passo) {
 		case PegaEmergenciaDaFila:
-			if (emergencia == null)
+			if (emergencia == null) {
 				emergencia = cidade.pegarEmergenciaParaAtender();
-			if (emergencia == null)
-				block();
-			else
+			}
+			if (emergencia != null) {
 				passo = AmbulanciaPassos.PerguntaEnderecoDasAmbulancias;
+				System.out.println("Nova emergencia para atender: "
+						+ emergencia.endereco);
+			}
+			break;
 		case PerguntaEnderecoDasAmbulancias:
 			System.out.println("Procurando ambulancia para emergencia");
 			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
@@ -64,9 +67,11 @@ public class AlocarAmbulancia extends Behaviour {
 			cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 																	// value
 			myAgent.send(cfp);
-			mt = MessageTemplate.and(MessageTemplate.MatchConversationId(ontologia.Servicos.TransportarPacientes),
-					MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
-			
+			mt = MessageTemplate
+					.and(MessageTemplate
+							.MatchConversationId(ontologia.Servicos.TransportarPacientes),
+							MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+
 			passo = AmbulanciaPassos.RecebeEnderecoDasAmbulancias;
 			break;
 		case RecebeEnderecoDasAmbulancias:
@@ -77,10 +82,17 @@ public class AlocarAmbulancia extends Behaviour {
 						+ " para atender a emergencia");
 				if (reply.getPerformative() == ACLMessage.PROPOSE) {
 					try {
-						Objeto endereco = cidade.map_get(  (int) reply.getContentObject());
+						Objeto endereco = cidade.map_get((int) reply
+								.getContentObject());
+						System.out.println("Proposta de "
+								+ reply.getSender().getLocalName()
+								+ " endereco: " + endereco.toString());
+						System.out.println("Proposta de "
+								+ reply.getSender().getLocalName()
+								+ " emergencia " + emergencia);
 						if (endereco != null) {
-							int distancia = endereco.distancia(cidade.map_get(emergencia
-									.endereco));
+							int distancia = endereco.distancia(cidade
+									.map_get(emergencia.endereco));
 							if (ambulanciaMaisProxima == null
 									|| distancia < menorDistancia) {
 								ambulanciaMaisProxima = reply.getSender();
@@ -88,7 +100,7 @@ public class AlocarAmbulancia extends Behaviour {
 							}
 							System.out.println("Distância de "
 									+ reply.getSender().getLocalName()
-									+ " até a emergencia"+ " distancia= "
+									+ " até a emergencia" + " distancia= "
 									+ distancia);
 						}
 					} catch (UnreadableException e) {
@@ -112,9 +124,11 @@ public class AlocarAmbulancia extends Behaviour {
 				order.setConversationId(ontologia.Servicos.TransportarPacientes);
 				order.setContentObject(emergencia);
 				myAgent.send(order);
-				mt = MessageTemplate.and(
-						MessageTemplate.MatchConversationId(ontologia.Servicos.TransportarPacientes),
-						MessageTemplate.MatchInReplyTo(order.getReplyWith()));
+				mt = MessageTemplate
+						.and(MessageTemplate
+								.MatchConversationId(ontologia.Servicos.TransportarPacientes),
+								MessageTemplate.MatchInReplyTo(order
+										.getReplyWith()));
 				passo = AmbulanciaPassos.TrataRespostaDaAmbulancia;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -124,13 +138,14 @@ public class AlocarAmbulancia extends Behaviour {
 			reply = myAgent.receive(mt);
 			if (reply != null) {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
-					
+
 					System.out.println(ambulanciaMaisProxima.getLocalName()
 							+ " informou que irá atender a emergencia");
 					this.emergencia = null;
 				} else {
-					System.out.println(ambulanciaMaisProxima.getLocalName()
-							+ " informou que nao irá pode atender a emergencia, tentando outra");
+					System.out
+							.println(ambulanciaMaisProxima.getLocalName()
+									+ " informou que nao irá pode atender a emergencia, tentando outra");
 				}
 				passo = AmbulanciaPassos.PegaEmergenciaDaFila;
 			} else {

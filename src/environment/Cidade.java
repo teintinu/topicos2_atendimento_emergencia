@@ -8,7 +8,7 @@ import ontologia.entidades.Emergencia;
 
 public class Cidade {
 
-	public static Cidade singleton;
+	public static Cidade singleton= new Cidade("Bitlandia", 600, 600);
 	public static CentralEmergencia central;
 
 	public final String nome;
@@ -30,6 +30,8 @@ public class Cidade {
 	}
 
 	public Emergencia pegarEmergenciaParaAtender() {
+		if (emergenciasPendentes.size()==0)
+			return null;
 		return emergenciasPendentes.remove(0);
 	}
 

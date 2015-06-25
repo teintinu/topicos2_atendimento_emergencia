@@ -1,5 +1,6 @@
 package agents;
 
+import web.HttpServer;
 import jade.core.Agent;
 import behaviours.SimularEmergencias;
 import behaviours.central.AlocarAmbulancia;
@@ -15,23 +16,17 @@ public class CentralEmergencia extends Agent {
 
 	@Override
 	protected void setup() {
-		if (Cidade.singleton != null) {
+		if (Cidade.central != null) {
 			System.out
 					.println("Só é suportado uma Central de emergencia por cidade");
 			doDelete();
 			return;
 		}
 
-		String nomeCidade = "Bitlandia";
 		Cidade cidade = null;
 		Object[] args = getArguments();
-		if (args != null && args.length > 0) {
-			nomeCidade = (String) args[0];
-		}
 
-		System.out.println("Registrando central de emergencia para cidade "
-				+ nomeCidade);
-		Cidade.singleton = new Cidade(nomeCidade, 600, 600);
+		System.out.println("Registrando central de emergencia para cidade");
 		cidade = Cidade.singleton;
 		cidade.central = this;
 
@@ -40,10 +35,15 @@ public class CentralEmergencia extends Agent {
 
 		addBehaviour(new SimularEmergencias(this, cidade));
 		this.cidade = cidade;
-		if (cidade == null)
+		if (cidade == null) {
+			System.out
+					.println("Central de emergencia vai encerrar as atividades na cidade null: "
+							+ getAID().getLocalName());
 			doDelete();
-		else
+		} else
 			addBehaviour(new AlocarAmbulancia(cidade));
+
+		//HttpServer.start();
 	}
 
 	@Override
@@ -58,5 +58,6 @@ public class CentralEmergencia extends Agent {
 			Cidade.singleton = null;
 		}
 		cidade = null;
+		//HttpServer.stop();
 	}
 }
