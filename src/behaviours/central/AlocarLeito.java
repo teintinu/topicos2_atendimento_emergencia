@@ -47,6 +47,7 @@ public class AlocarLeito extends Behaviour {
 				DFAgentDescription[] result = DFService.search(myAgent,
 						template);
 				for (int i = 0; i < result.length; ++i) {
+					System.out.println("Notificando hospital: "+result[i].getName());
 					cfp.addReceiver(result[i].getName());
 				}
 				repliesPending = result.length;
@@ -64,6 +65,7 @@ public class AlocarLeito extends Behaviour {
 			passo = HospitalPassos.RecebeInformacoesDosHospitais;
 			break;
 		case RecebeInformacoesDosHospitais:
+			
 			ACLMessage reply = myAgent.receive(mt);
 			if (reply != null) {
 				System.out.println("Proposta do hospital "
@@ -94,8 +96,6 @@ public class AlocarLeito extends Behaviour {
 				repliesPending--;
 				if (repliesPending <= 0)
 					passo = HospitalPassos.SelecionaHospital;
-			} else {
-				block();
 			}
 			break;
 		case SelecionaHospital:

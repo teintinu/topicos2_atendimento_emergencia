@@ -15,6 +15,7 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 
 	@Override
 	public void action() {
+		
 		ACLMessage msg = myAgent.receive();
 		if (msg != null) {
 			if (msg.getPerformative() == ACLMessage.CFP
@@ -30,6 +31,7 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+				System.out.println("aaaaaaaaaaaaaaaa-reply");
 				myAgent.send(reply);
 			} else if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL
 					&& ontologia.Servicos.TratarPacientes.equals(msg
