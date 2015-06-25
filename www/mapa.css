@@ -1,0 +1,19 @@
+.mapa {
+    position: relative; background-color: #dedbe6
+}
+
+.emergencia {
+    position: relative; background-color: red; width: 3px; height: 3px
+}
+
+.ambulancia {
+    position: relative; background-color: #fa71bb; width: 5px; height: 5px
+}
+
+.hospital {
+    position: relative; background-color: green; width: 10px; height: 10px
+}
+
+.central {
+    position: relative; background-color: blue; width: 10px; height: 10px
+}

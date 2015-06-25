@@ -69,6 +69,7 @@ public class Cidade {
 		ret.append(tamanhoLat);
 		ret.append(',');
 		ret.append(tamanhoLong);
+		ret.append('\n');
 		for (int i = 0; i < items.length; i++) {
 			Objeto o = (Objeto) items[i];
 			o.serialize(ret);

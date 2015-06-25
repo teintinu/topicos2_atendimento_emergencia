@@ -119,9 +119,10 @@ public class AlocarLeito extends Behaviour {
 			}
 			break;
 		case ConfirmarReservaLeito:
-			System.out.println("conf leito ");
+
 			reply = myAgent.receive(mt);
 			if (reply != null) {
+				System.out.println("conf leito - reply ");
 				if (reply.getPerformative() == ACLMessage.INFORM) {
 					System.out.println(hospitalMaisProximo.getLocalName()
 							+ " informou que irá atender a emergencia");

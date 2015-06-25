@@ -28,7 +28,7 @@ import environment.Cidade;
  * @author Dustin R. Callaway
  */
 public class HttpServer implements Runnable {
-	static final String WEB_ROOT = ".";
+	static final String WEB_ROOT = "www";
 	static final int PORT = 8080; // default port
 
 	// instance variables
@@ -86,7 +86,7 @@ public class HttpServer implements Runnable {
 			String method = parse.nextToken().toUpperCase();
 			url = parse.nextToken().toLowerCase();
 
-			if ("./mapa".equals(url))
+			if ("/mapa".equals(url))
 				renderMapa(out);
 			else
 				serverFile(url, out);
@@ -150,7 +150,7 @@ public class HttpServer implements Runnable {
 	private void renderMapa(OutputStream outputStream) {
 		StringBuilder ret = new StringBuilder();
 		Cidade.singleton.toCSV(ret);
-		outputString(outputStream, "text/csv", ret.toString());
+		outputString(outputStream, "text/plain", ret.toString());
 	}
 
 	private void outputString(OutputStream outputStream, String mime,

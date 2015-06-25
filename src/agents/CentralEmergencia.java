@@ -43,7 +43,7 @@ public class CentralEmergencia extends Agent {
 		} else
 			addBehaviour(new AlocarAmbulancia(cidade));
 
-		//HttpServer.start();
+		HttpServer.start();
 	}
 
 	@Override

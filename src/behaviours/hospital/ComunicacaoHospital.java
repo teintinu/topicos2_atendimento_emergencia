@@ -38,6 +38,7 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 				Hospital hosp = (Hospital) myAgent;
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REFUSE);
+				reply.setConversationId(ontologia.Servicos.TratarPacientes);
 				if (hosp.leitos_em_uso < hosp.qtde_leitos)
 					try {
 						System.out.println("Hospital "+hosp.getLocalName()+" leitos "+hosp.leitos_em_uso+"+1 de "+hosp.qtde_leitos);
