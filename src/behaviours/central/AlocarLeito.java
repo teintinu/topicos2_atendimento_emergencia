@@ -59,7 +59,7 @@ public class AlocarLeito extends Behaviour {
 			myAgent.send(cfp);
 			mt = MessageTemplate
 					.and(MessageTemplate
-							.MatchConversationId(ontologia.Servicos.TransportarPacientes),
+							.MatchConversationId(ontologia.Servicos.TratarPacientes),
 							MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
 			passo = HospitalPassos.RecebeInformacoesDosHospitais;
@@ -119,6 +119,7 @@ public class AlocarLeito extends Behaviour {
 			}
 			break;
 		case ConfirmarReservaLeito:
+			System.out.println("conf leito ");
 			reply = myAgent.receive(mt);
 			if (reply != null) {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
