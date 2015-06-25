@@ -45,7 +45,7 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 						hosp.leitos_em_uso++;
 						Emergencia e = (Emergencia) msg.getContentObject();
 						reply.setContentObject(hosp.endereco);
-						reply.setPerformative(ACLMessage.PROPOSE);
+						reply.setPerformative(ACLMessage.INFORM);
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (UnreadableException e1) {

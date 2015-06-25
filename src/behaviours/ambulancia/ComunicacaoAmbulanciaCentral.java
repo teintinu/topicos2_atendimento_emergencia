@@ -41,7 +41,7 @@ public class ComunicacaoAmbulanciaCentral extends CyclicBehaviour {
 						Emergencia e = (Emergencia) msg.getContentObject();
 						amb.addBehaviour(new BuscarPaciente(amb, e)); 
 						reply.setContentObject(amb.endereco);
-						reply.setPerformative(ACLMessage.PROPOSE);
+						reply.setPerformative(ACLMessage.INFORM);
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (UnreadableException e1) {

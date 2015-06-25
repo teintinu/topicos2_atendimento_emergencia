@@ -27,17 +27,43 @@ import environment.Cidade;
  *
  * @author Dustin R. Callaway
  */
-public class HttpServer implements Runnable {
+public class HttpServer implements Runnable
+{
+
 	static final String WEB_ROOT = "www";
 	static final int PORT = 8080; // default port
 
-	// instance variables
-	Socket connect;
 
-	// constructor
-	public HttpServer(Socket connect) {
-		this.connect = connect;
+	@Override
+	public void run() {
+		ServerSocket serverConnect=null;
+		try {
+			serverConnect = new ServerSocket(PORT);
+			System.out.println("\nListening for connections on port " + PORT
+					+ "...\n");
+			listenning = true;
+			while (listenning) // listen until user halts execution
+			{
+				HttpRequest req = new HttpRequest(serverConnect.accept()); // instantiate
+																			// HttpServer
+				// create new thread
+				Thread threadRunner = new Thread(req);
+				threadRunner.start(); // start thread
+			}
+		} catch (IOException e) {
+			System.err.println("Server error: " + e);
+		}
+		finally{
+			if (serverConnect!=null)
+				try {
+					serverConnect.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
 	}
+
 
 	private static boolean listenning = false;
 
@@ -46,26 +72,24 @@ public class HttpServer implements Runnable {
 	 * it running in a separate thread.
 	 */
 	public static void start() {
-		try {
-			ServerSocket serverConnect = new ServerSocket(PORT);
-			System.out.println("\nListening for connections on port " + PORT
-					+ "...\n");
-			listenning = true;
-			while (listenning) // listen until user halts execution
-			{
-				HttpServer server = new HttpServer(serverConnect.accept()); // instantiate
-																			// HttpServer
-				// create new thread
-				Thread threadRunner = new Thread(server);
-				threadRunner.start(); // start thread
-			}
-		} catch (IOException e) {
-			System.err.println("Server error: " + e);
-		}
+		Thread threadRunner = new Thread(new HttpServer());
+		threadRunner.start();
 	}
 
 	public static void stop() {
 		listenning = false;
+	}
+
+}
+
+class HttpRequest implements Runnable {
+
+	// instance variables
+	Socket connect;
+
+	// constructor
+	public HttpRequest(Socket connect) {
+		this.connect = connect;
 	}
 
 	/**
@@ -110,7 +134,7 @@ public class HttpServer implements Runnable {
 		}
 
 		// create file object
-		File file = new File(WEB_ROOT, fileRequested);
+		File file = new File(HttpServer. WEB_ROOT, fileRequested);
 		// get length of file
 		int fileLength = (int) file.length();
 

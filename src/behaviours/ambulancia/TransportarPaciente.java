@@ -1,6 +1,7 @@
 package behaviours.ambulancia;
 
 import java.io.IOException;
+import java.util.Date;
 
 import agents.Ambulancia;
 import ontologia.entidades.Emergencia;
@@ -18,6 +19,7 @@ public class TransportarPaciente extends Behaviour {
 	private Emergencia emergencia;
 	private Objeto endereco_hospital;
 	private AID hospistal;
+	private long lastTick;
 
 	public TransportarPaciente(Emergencia e, AID hospistal,
 			Objeto endereco_hospital) {
@@ -27,10 +29,15 @@ public class TransportarPaciente extends Behaviour {
 		this.endereco_hospital = endereco_hospital;
 		chegou = false;
 		ambulancia.setStatusTransportarPacienteParaHospital();
+		lastTick=new Date().getTime();
 	}
 
 	@Override
 	public void action() {
+		long tick = new Date().getTime();
+		if (tick-lastTick<100)
+			return;
+		lastTick=tick;
 		Objeto amb = Cidade.singleton.map_get(ambulancia.endereco);
 		Objeto e = Cidade.singleton.map_get(emergencia.endereco);
 		chegou = amb.walkTo(endereco_hospital);
