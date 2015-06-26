@@ -13,7 +13,7 @@ public class Emergencia implements Serializable{
 	private static final long serialVersionUID = 2422214654185065271L;
 		
 	public Emergencia(Cidade cidade, String descricao, int latitude, int longitude) {
-		this.endereco =cidade.map_create(descricao, "emergencia", latitude, longitude,0,0);
+		this.endereco =cidade.map_create(descricao, "emergencia", latitude, longitude, new int[]{});
 		cidade.emergenciasPendentes.add(this);
 	}
 

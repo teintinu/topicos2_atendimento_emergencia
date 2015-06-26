@@ -25,8 +25,7 @@ var Mapa = React.createClass({
                         tipo: o[1],
                         lat: o[2],
                         lng: o[3],
-                        pos: o[4],
-                        max: o[5]
+                        props: o[4].split('^')
                     };
                 });
                 var totais = {};
@@ -59,7 +58,9 @@ var Mapa = React.createClass({
     },
     render: function () {
         var self = this;
-        return React.createElement('h1', {}, React.createElement('a', {href: '#'}, 'Atendimento de emergencias em: '+this.state.cidade.nome),
+        return React.createElement('h1', {}, React.createElement('a', {
+                href: '#'
+            }, 'Atendimento de emergencias em: ' + this.state.cidade.nome),
 
             React.createElement('table', {
                 className: 'objetos'
@@ -67,21 +68,26 @@ var Mapa = React.createClass({
                     className: 'titulo'
                 },
                 React.createElement('td', {
-                    colSpan: 3
+                    colSpan: 5
                 }, "Objetos na tela por tipo")
                 )].concat(Object.keys(self.state.totais).map(function (o) {
                 return React.createElement('tr', {},
                     React.createElement('td', {}, o),
-                    React.createElement('td', {}, self.state.totais[o])
+                    React.createElement('td', {}, React.createElement('div', {
+                        className: o, key:"lengenda_"+o
+                    })),
+                    React.createElement('td', {
+                        colSpan: 3
+                    }, self.state.totais[o])
                 );
             })).concat(self.state.objetos.reduce(function (arr, o) {
                 if (o.tipo == 'hospital') {
                     arr.push(React.createElement('tr', {},
                         React.createElement('td', {}, o.descricao),
                         React.createElement('td', {
-                            colSpan: 2,
+                            colSpan: 4,
                             align: "right"
-                        }, o.pos + ' de ' + o.max)
+                        }, o.props[0] + ' de ' + o.props[1])
                     ));
                 }
                 return arr;
@@ -90,7 +96,7 @@ var Mapa = React.createClass({
                     },
                     React.createElement('td', {}, "Hospital"),
                     React.createElement('td', {
-                        colSpan: 2
+                        colSpan: 4
                     }, "Ocupacao"))
                       ])).concat(self.state.objetos.reduce(function (arr, o) {
                 if (o.tipo == 'ambulancia') {
@@ -100,8 +106,16 @@ var Mapa = React.createClass({
                         }, o.descricao)),
                         React.createElement('td', {}, o.lat + ',' + o.lng),
                         React.createElement('td', {}, ['Livre',
-                                                       'Indo buscar paciente: ' + o.max,
-                                                       'Transportando paciente: ' + o.max][o.pos])
+                                                       'Indo buscar paciente: ' + o.props[1] + (o.props[6]>0?' Manut#'+o.props[6]:''),
+                                                       'Transportando paciente: ' + o.props[1]+ (o.props[6]>0?' Manut#'+o.props[6]:''),
+                                                       "Em manutencao st="+ o.props[6]
+                                                      ][o.props[0]]),
+                        React.createElement('td', {colspan:2}, o.props[2] + '/' + o.props[3])
+//                        React.createElement('td', {}, parseInt(o.props[4] / 1000) +
+//                            's ' +
+//                            parseInt(o.props[5] / 1000) +
+//                            's ' +
+//                            parseInt(o.props[4] / o.props[5] * 100) + '%')
                     ));
                 }
                 return arr;
@@ -110,7 +124,9 @@ var Mapa = React.createClass({
                 },
                 React.createElement('td', {}, "Ambulancias"),
                 React.createElement('td', {}, "Posicao"),
-                React.createElement('td', {}, "Situacao")
+                React.createElement('td', {}, "Situacao"),
+                React.createElement('td', {colspan:2}, "KM (total/manut)")
+                //React.createElement('td', {}, "Tempo livre")
                       )]))),
 
             React.createElement('div', {
@@ -120,12 +136,11 @@ var Mapa = React.createClass({
                     width: self.state.cidade.tamanhoLat,
                     height: self.state.cidade.tamanhoLong
                 }
-            }, (self.state.error ? '  (ERRO DE COMUNICACAO COM O SERVIDOR)' :
+            },
                 self.state.objetos.map(function (o) {
                     return React.createElement('div', {
                         id: o.descricao,
                         className: o.tipo == 'ambulancia' ? o.tipo + " " + o.descricao : o.tipo,
-                        ocupacao: o.pos / o.max,
                         key: o.tipo + "_" + o.descricao,
                         title: o.descricao,
                         style: {
@@ -133,7 +148,7 @@ var Mapa = React.createClass({
                             top: o.lng
                         }
                     });
-                })))
+                }))
         );
     },
     criarEmergencia: function (event) {

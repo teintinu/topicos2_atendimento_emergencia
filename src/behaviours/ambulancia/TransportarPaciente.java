@@ -7,6 +7,7 @@ import agents.Ambulancia;
 import ontologia.entidades.Emergencia;
 import environment.Cidade;
 import environment.Objeto;
+import environment.Walk;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -14,37 +15,40 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 public class TransportarPaciente extends Behaviour {
-	private boolean chegou;
+
+	public static int emergenciaSemAtendimento;
+
 	private Ambulancia ambulancia;
 	private Emergencia emergencia;
 	private Objeto endereco_hospital;
 	private AID hospistal;
-	private long lastTick;
+	private Walk walk;
 
-	public TransportarPaciente(Ambulancia amb, Emergencia e, AID hospistal,
-			Objeto endereco_hospital) {
+	public TransportarPaciente(Ambulancia amb,
+			Emergencia e, AID hospistal, Objeto endereco_hospital) {
 		super(amb);
 		this.hospistal = hospistal;
 		ambulancia = (Ambulancia) myAgent;
 		emergencia = e;
 		this.endereco_hospital = endereco_hospital;
-		chegou = false;
+
+		walk = new Walk(Cidade.singleton.map_get(ambulancia.endereco),
+				endereco_hospital,
+				Cidade.singleton.map_get(emergencia.endereco),
+				ambulancia.velocidade);
 		ambulancia.setStatusTransportarPacienteParaHospital(e);
-		lastTick = new Date().getTime();
 	}
 
 	@Override
 	public void action() {
-		long tick = new Date().getTime();
-		if (tick - lastTick < 20)
+		if (emergenciaSemAtendimento == emergencia.endereco) {
+			walk = null;
+			emergenciaSemAtendimento = 0;
+			Cidade.singleton.emergenciasPendentes.add(emergencia);
 			return;
-		lastTick = tick;
-		Objeto amb = Cidade.singleton.map_get(ambulancia.endereco);
-		Objeto e = Cidade.singleton.map_get(emergencia.endereco);
-		chegou = amb.walkTo(endereco_hospital);
-		e.copy(amb);
-		if (chegou) {
-
+		}
+		walk.walk();
+		if (walk.chegou) {
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.setConversationId(ontologia.Servicos.TratarPacientes);
 			try {
@@ -55,13 +59,12 @@ public class TransportarPaciente extends Behaviour {
 				e1.printStackTrace();
 			}
 			ambulancia.setStatusLivre();
-		}
+		} else
+			ambulancia.km_rodado(walk.km_rodado());
 	}
 
 	@Override
 	public boolean done() {
-		return chegou;
+		return walk == null || walk.chegou;
 	}
-
-
 }

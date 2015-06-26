@@ -9,42 +9,37 @@ import agents.Ambulancia;
 import agents.CentralEmergencia;
 import environment.Cidade;
 import environment.Objeto;
+import environment.Walk;
 
 public class BuscarPaciente extends Behaviour {
 
 	private Ambulancia ambulancia;
 	private Emergencia emergencia;
-	private boolean chegou;
-	private long lastTick;
+	private Walk walk;
 
 	public BuscarPaciente(Ambulancia amb, Emergencia e) {
 		super(amb);
 		ambulancia = (Ambulancia) myAgent;
 		emergencia = e;
-		chegou = false;
 		ambulancia.setStatusBuscarPaciente(e);
-		lastTick = new Date().getTime();
+		walk = new Walk(Cidade.singleton.map_get(ambulancia.endereco),
+				Cidade.singleton.map_get(emergencia.endereco), null, ambulancia.velocidade);
 	}
 
 	@Override
 	public void action() {
-		long tick = new Date().getTime();
-		if (tick - lastTick < 20)
-			return;
-		lastTick = tick;
-		Objeto amb = Cidade.singleton.map_get(ambulancia.endereco);
-		Objeto e = Cidade.singleton.map_get(emergencia.endereco);
-		chegou = amb.walkTo(e);
-		if (chegou) {
+		walk.walk();
+		if (walk.chegou) {
 			System.out.println("Ambulancia chegou no local da emergencia");
 			Cidade.central
 					.addBehaviour(new AlocarLeito(ambulancia, emergencia));
-		}
+		} else
+			ambulancia.km_rodado(walk.km_rodado());
 	}
 
 	@Override
 	public boolean done() {
-		return chegou;
+		return walk.chegou;
 	}
 
 }

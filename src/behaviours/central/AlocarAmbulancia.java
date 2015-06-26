@@ -107,6 +107,7 @@ public class AlocarAmbulancia extends Behaviour {
 				if (repliesPending <= 0)
 					if (ambulanciaMaisProxima == null){
 						passo = AmbulanciaPassos.PegaEmergenciaDaFila;
+						block(100);
 					}
 					else
 						passo = AmbulanciaPassos.EncaminhaEmergenciaParaAmbulancia;

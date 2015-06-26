@@ -4,6 +4,7 @@ import web.HttpServer;
 import jade.core.Agent;
 import behaviours.SimularEmergencias;
 import behaviours.central.AlocarAmbulancia;
+import behaviours.central.ControlaManutencao;
 import environment.Cidade;
 
 public class CentralEmergencia extends Agent {
@@ -23,25 +24,17 @@ public class CentralEmergencia extends Agent {
 			return;
 		}
 
-		Cidade cidade = null;
-		Object[] args = getArguments();
-
 		System.out.println("Registrando central de emergencia para cidade");
 		cidade = Cidade.singleton;
-		cidade.central = this;
+		Cidade.central = this;
 
 		endereco = cidade.map_create("Central", "central",
-				cidade.tamanhoLat / 2, cidade.tamanhoLong / 2,0,0);
+				cidade.tamanhoLat / 2, cidade.tamanhoLong / 2, new int[] {});
 
 		addBehaviour(new SimularEmergencias(this, cidade));
-		this.cidade = cidade;
-		if (cidade == null) {
-			System.out
-					.println("Central de emergencia vai encerrar as atividades na cidade null: "
-							+ getAID().getLocalName());
-			doDelete();
-		} else
-			addBehaviour(new AlocarAmbulancia(cidade));
+
+		addBehaviour(new AlocarAmbulancia(cidade));
+		addBehaviour(new ControlaManutencao(this));
 
 		HttpServer.start();
 	}
@@ -52,12 +45,12 @@ public class CentralEmergencia extends Agent {
 				.println("Central de emergencia encerrou as atividades na cidade: "
 						+ getAID().getLocalName());
 		if (cidade != null) {
-			cidade.central = null;
+			Cidade.central = null;
 			if (endereco != null)
 				cidade.map_remove(endereco);
 			Cidade.singleton = null;
 		}
 		cidade = null;
-		//HttpServer.stop();
+		// HttpServer.stop();
 	}
 }

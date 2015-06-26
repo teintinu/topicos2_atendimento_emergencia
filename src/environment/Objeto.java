@@ -8,38 +8,44 @@ public class Objeto implements Serializable {
 	public String tipo;
 	public int latitude;
 	public int longitude;
-	public int pos;
-	public int max;
+	public int[] props;
 
-	public Objeto(String descricao, String tipo, int latitude, int longitude, int pos, int max) {
+	public Objeto(String descricao, String tipo, int latitude, int longitude,
+			int[] props) {
 		this.descricao = descricao;
 		this.tipo = tipo;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.pos=pos;
-		this.max=max;
+		this.props = props;
 	}
-	
+
 	@Override
 	public String toString() {
-		StringBuilder s=new StringBuilder();
+		StringBuilder s = new StringBuilder();
 		serialize(s);
 		return s.toString();
 	}
 
 	public void serialize(StringBuilder s) {
+		int lat, lng;
+		int[] props;
+		synchronized (this) {
+			lat = latitude;
+			lng = longitude;
+			props = this.props;
+		}
 		s.append(descricao);
 		s.append(',');
 		s.append(tipo);
 		s.append(',');
-		synchronized (this) {
-			s.append(latitude);
-			s.append(',');
-			s.append(longitude);
-			s.append(',');
-			s.append(pos);
-			s.append(',');
-			s.append(max);
+
+		s.append(lat);
+		s.append(',');
+		s.append(lng);
+		s.append(',');
+		for (int i = 0; i < props.length; i++) {
+			s.append(props[i]);
+			s.append('^');
 		}
 		s.append('\n');
 	}
@@ -50,38 +56,4 @@ public class Objeto implements Serializable {
 		int c = (int) Math.sqrt(a * a + b * b);
 		return c;
 	}
-
-	public void moveTo(int latitude, int longitude) {
-		synchronized (this) {
-			this.latitude = latitude;
-			this.longitude = longitude;
-		}
-	}
-
-	public boolean walkTo(Objeto target) {
-		int lat_delta = 0, long_delta = 0;
-		synchronized (this) {
-			synchronized (target) {
-				if (this.latitude > target.latitude)
-					lat_delta = -1;
-				else if (this.latitude < target.latitude)
-					lat_delta = 1;
-				if (this.longitude > target.longitude)
-					long_delta = -1;
-				else if (this.longitude < target.longitude)
-					long_delta = 1;
-			}
-			this.latitude += lat_delta;
-			this.longitude += long_delta;
-		}
-		return lat_delta==0 && long_delta==0;
-	}
-
-	public void copy(Objeto target) {
-		synchronized (target) {
-			this.latitude=target.latitude;
-			this.longitude=target.longitude;
-		}		
-	}
-
 }

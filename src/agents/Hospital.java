@@ -22,7 +22,7 @@ public class Hospital extends Agent {
 			int lng = Integer.parseInt((String) args[1]);
 			int qtde_leitos = Integer.parseInt((String) args[2]);
 			endereco = Cidade.singleton.map_create(getAID().getLocalName(),
-					"hospital", lat, lng, 0, qtde_leitos);
+					"hospital", lat, lng, new int[]{0, qtde_leitos});
 			System.out.println("Abrindo hospital: " + getAID().getLocalName());
 		} else {
 			System.out
@@ -57,8 +57,8 @@ public class Hospital extends Agent {
 	public boolean ocuparLeito() {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			if (o.pos < o.max) {
-				o.pos++;
+			if (o.props[0] < o.props[1]) {
+				o.props[0]++;
 				return true;
 			}
 		}
@@ -68,14 +68,14 @@ public class Hospital extends Agent {
 	public void desocuparLeito() {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			o.pos--;
+			o.props[0]--;
 		}
 	}
 
 	public int leitos_disponiveis() {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			return o.max-o.pos;
+			return o.props[1]-o.props[0];
 		}
 	}
 }

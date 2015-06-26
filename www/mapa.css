@@ -4,11 +4,18 @@
 
 .mapa {
     position: absolute;
-    right: 3px;
-    top: 3px;
+    right: 20px;
+    top: 10px;
     background-color: #dedbe6;
     float: right;
     z-index: 1;
+}
+
+@media only screen and (max-device-width: 480px) {
+    .mapa {
+        float: left;
+        transform: scale(0.8)
+    }
 }
 
 .objetos {
@@ -32,52 +39,93 @@
     margin-left: -1px;
     margin-top: -1px;
     animation-name: novaemergencia;
-	animation-duration: 1500ms;
-	animation-iteration-count:1;
-	animation-timing-function: ease-out;
+    animation-duration: 1500ms;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-out;
     -webkit-animation-name: novaemergencia;
-	-webkit-animation-duration: 800ms;
-	-webkit-animation-iteration-count:1;
-	-webkit-animation-timing-function: ease-out;
+    -webkit-animation-duration: 800ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-out;
 }
 
 @keyframes novaemergencia {
-0% { transform: scale(1) rotate(0deg) }
-45% { transform: scale(4) }
-70% { background-color: yellow; transform: scale(10) rotate(180deg)}
-100% { background-color: #764444; transform: scale(1) rotate(360deg)}
+    0% {
+        transform: scale(1) rotate(0deg)
+    }
+    45% {
+        transform: scale(4)
+    }
+    70% {
+        background-color: yellow;
+        transform: scale(10) rotate(180deg)
+    }
+    100% {
+        background-color: #764444;
+        transform: scale(1) rotate(360deg)
+    }
 }
 
 @-webkit-keyframes novaemergencia {
-0% { transform: scale(1) rotate(0deg)}
-45% { transform: scale(4) }
-70% { background-color: yellow; transform: scale(10) rotate(180deg)}
-100% { background-color: #764444; transform: scale(1) rotate(360deg) }
+    0% {
+        transform: scale(1) rotate(0deg)
+    }
+    45% {
+        transform: scale(4)
+    }
+    70% {
+        background-color: yellow;
+        transform: scale(10) rotate(180deg)
+    }
+    100% {
+        background-color: #764444;
+        transform: scale(1) rotate(360deg)
+    }
 }
 
-:target{
+:target {
     animation-name: destaque;
-	animation-duration: 500ms;
-	animation-iteration-count: infinite;
-	animation-timing-function: ease-out;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-out;
     -webkit-animation-name: destaque;
-	-webkit-animation-duration: 500ms;
-	-webkit-animation-iteration-count: infinite;
-	-webkit-animation-timing-function: ease-out;
+    -webkit-animation-duration: 500ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-out;
 }
 
 @keyframes destaque {
-0% { transform: scale(1) }
-45% { transform: scale(2) }
-70% { background-color: white; transform: scale(3)}
-100% { background-color: rgb(250, 62, 62); transform: scale(1)}
+    0% {
+        transform: scale(1)
+    }
+    45% {
+        transform: scale(2)
+    }
+    70% {
+        background-color: white;
+        transform: scale(3)
+    }
+    100% {
+        background-color: rgb(250, 62, 62);
+        transform: scale(1)
+    }
 }
 
 @-webkit-keyframes destaque {
-0% { background-color: rgb(250, 62, 62); transform: scale(1) }
-45% { transform: scale(1.5) }
-70% { background-color: white; transform: scale(1.8)}
-100% { background-color: rgb(250, 62, 62); transform: scale(1)}
+    0% {
+        background-color: rgb(250, 62, 62);
+        transform: scale(1)
+    }
+    45% {
+        transform: scale(1.5)
+    }
+    70% {
+        background-color: white;
+        transform: scale(1.8)
+    }
+    100% {
+        background-color: rgb(250, 62, 62);
+        transform: scale(1)
+    }
 }
 
 .ambulancia {
@@ -101,6 +149,16 @@
     z-index: 10;
     margin-left: -8px;
     margin-top: -8px;
+}
+
+.oficina {
+    position: absolute;
+    background-color: green;
+    width: 10px;
+    height: 10px;
+    z-index: 5;
+    margin-left: -5px;
+    margin-top: -5px;
 }
 
 .central {

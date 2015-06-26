@@ -38,10 +38,10 @@ public class Cidade {
 	private int map_id = 0;
 
 	public int map_create(String descricao, String tipo, int latitude,
-			int longitude, int pos, int max) {
+			int longitude, int[] props) {
 		synchronized (mapa) {
 			map_id++;
-			Objeto o = new Objeto(descricao, tipo, latitude, longitude, pos, max);
+			Objeto o = new Objeto(descricao, tipo, latitude, longitude, props);
 			mapa.put(map_id, o);
 			return map_id;
 		}
@@ -50,6 +50,24 @@ public class Cidade {
 	public Objeto map_get(int objId) {
 		synchronized (mapa) {
 			return mapa.get(objId);
+		}
+	}
+
+	public int map_getprop(int objId, int idx) {
+		synchronized (mapa) {
+			Objeto o = mapa.get(objId);
+			synchronized (o) {
+				return o.props[idx];
+			}
+		}
+	}
+
+	public void map_setprop(int objId, int idx, int value) {
+		synchronized (mapa) {
+			Objeto o = mapa.get(objId);
+			synchronized (o) {
+				o.props[idx]=value;
+			}
 		}
 	}
 
