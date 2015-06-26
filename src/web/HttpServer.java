@@ -31,7 +31,7 @@ import environment.Cidade;
 public class HttpServer implements Runnable {
 
 	static final String WEB_ROOT = "www";
-	static final int PORT = 8080; // default port
+	static final int PORT = 2300; // default port
 
 	@Override
 	public void run() {
