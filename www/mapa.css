@@ -36,23 +36,23 @@
 	animation-iteration-count:1;
 	animation-timing-function: ease-out;
     -webkit-animation-name: novaemergencia;
-	-webkit-animation-duration: 1500ms;
+	-webkit-animation-duration: 800ms;
 	-webkit-animation-iteration-count:1;
 	-webkit-animation-timing-function: ease-out;
 }
 
 @keyframes novaemergencia {
-0% { transform: scale(1) }
+0% { transform: scale(1) rotate(0deg) }
 45% { transform: scale(4) }
-70% { background-color: red; transform: scale(10) }
-100% { background-color: #764444; transform: scale(1) }
+70% { background-color: yellow; transform: scale(10) rotate(180deg)}
+100% { background-color: #764444; transform: scale(1) rotate(360deg)}
 }
 
 @-webkit-keyframes novaemergencia {
-0% { transform: scale(1) }
+0% { transform: scale(1) rotate(0deg)}
 45% { transform: scale(4) }
-70% { background-color: red; transform: scale(10) }
-100% { background-color: #764444; transform: scale(1) }
+70% { background-color: yellow; transform: scale(10) rotate(180deg)}
+100% { background-color: #764444; transform: scale(1) rotate(360deg) }
 }
 
 .ambulancia {
