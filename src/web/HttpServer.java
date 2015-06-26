@@ -182,7 +182,7 @@ class HttpRequest implements Runnable {
 		String s[]=url.substring(16).split(",");
 		int lat=Integer.parseInt(s[0]);
 		int lng=Integer.parseInt(s[1]);
-		new Emergencia(Cidade.singleton, "click", lat, lng);
+		new Emergencia(Cidade.singleton, "click"+new Date().getTime(), lat, lng);
 	}
 
 	private void outputString(OutputStream outputStream, String mime,

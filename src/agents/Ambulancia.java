@@ -25,7 +25,7 @@ public class Ambulancia extends Agent {
 
 		endereco = Cidade.singleton.map_create(getAID().getLocalName(),
 				"ambulancia", Cidade.singleton.tamanhoLat / 2,
-				Cidade.singleton.tamanhoLong / 2,0,1);
+				Cidade.singleton.tamanhoLong / 2, 0, 1);
 
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
@@ -45,8 +45,10 @@ public class Ambulancia extends Agent {
 
 	@Override
 	protected void takeDown() {
-		if (endereco != null)
-			Cidade.singleton.map_remove(endereco);
+		if (Cidade.singleton != null) {
+			if (endereco != null)
+				Cidade.singleton.map_remove(endereco);
+		}
 		System.out.println("Motorista de ambulância demitido: "
 				+ getAID().getLocalName());
 		try {
@@ -59,30 +61,30 @@ public class Ambulancia extends Agent {
 	public void setStatusLivre() {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			o.pos=0;
+			o.pos = 0;
 		}
 	}
 
 	public void setStatusBuscarPaciente(Emergencia e) {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			o.pos=1;
-			o.max=e.endereco;
+			o.pos = 1;
+			o.max = e.endereco;
 		}
 	}
-	
+
 	public void setStatusTransportarPacienteParaHospital(Emergencia e) {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			o.pos=2;
-			o.max=e.endereco;
+			o.pos = 2;
+			o.max = e.endereco;
 		}
 	}
 
 	public boolean livre() {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			return o.pos==0;
+			return o.pos == 0;
 		}
 	}
 }

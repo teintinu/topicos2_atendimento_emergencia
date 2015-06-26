@@ -59,7 +59,7 @@ var Mapa = React.createClass({
     },
     render: function () {
         var self = this;
-        return React.createElement('h1', {}, this.state.cidade.nome,
+        return React.createElement('h1', {}, React.createElement('a', {href: '#'}, 'Atendimento de emergencias em: '+this.state.cidade.nome),
 
             React.createElement('table', {
                 className: 'objetos'
@@ -95,10 +95,12 @@ var Mapa = React.createClass({
                       ])).concat(self.state.objetos.reduce(function (arr, o) {
                 if (o.tipo == 'ambulancia') {
                     arr.push(React.createElement('tr', {},
-                        React.createElement('td', {}, o.descricao),
+                        React.createElement('td', {}, React.createElement('a', {
+                            href: '#' + o.descricao
+                        }, o.descricao)),
                         React.createElement('td', {}, o.lat + ',' + o.lng),
                         React.createElement('td', {}, ['Livre',
-                                                       'Indo pegar paciente: ' + o.max,
+                                                       'Indo buscar paciente: ' + o.max,
                                                        'Transportando paciente: ' + o.max][o.pos])
                     ));
                 }
@@ -121,8 +123,10 @@ var Mapa = React.createClass({
             }, (self.state.error ? '  (ERRO DE COMUNICACAO COM O SERVIDOR)' :
                 self.state.objetos.map(function (o) {
                     return React.createElement('div', {
+                        id: o.descricao,
                         className: o.tipo == 'ambulancia' ? o.tipo + " " + o.descricao : o.tipo,
                         ocupacao: o.pos / o.max,
+                        key: o.tipo + "_" + o.descricao,
                         title: o.descricao,
                         style: {
                             left: o.lat,
@@ -139,7 +143,7 @@ var Mapa = React.createClass({
         var canvasY = 0;
         var currentElement = event.target;
         if (!event.target.classList.contains('mapa'))
-          return;
+            return;
 
         do {
             totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
@@ -157,6 +161,7 @@ var Mapa = React.createClass({
         };
         r.send("");
     }
+
 });
 
 React.render(React.createElement(Mapa), document.getElementById('mapa'));
