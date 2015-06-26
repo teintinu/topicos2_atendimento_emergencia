@@ -5,7 +5,9 @@ import jade.core.Agent;
 import behaviours.SimularEmergencias;
 import behaviours.central.AlocarAmbulancia;
 import behaviours.central.ControlaManutencao;
+import behaviours.central.UsarNitroglicerina;
 import environment.Cidade;
+import environment.Objeto;
 
 public class CentralEmergencia extends Agent {
 	/**
@@ -29,12 +31,13 @@ public class CentralEmergencia extends Agent {
 		Cidade.central = this;
 
 		endereco = cidade.map_create("Central", "central",
-				cidade.tamanhoLat / 2, cidade.tamanhoLong / 2, new int[] {});
+				cidade.tamanhoLat / 2, cidade.tamanhoLong / 2, new int[] { 0 });
 
 		addBehaviour(new SimularEmergencias(this, cidade));
 
 		addBehaviour(new AlocarAmbulancia(cidade));
 		addBehaviour(new ControlaManutencao(this));
+		addBehaviour(new UsarNitroglicerina(this));
 
 		HttpServer.start();
 	}
@@ -52,5 +55,19 @@ public class CentralEmergencia extends Agent {
 		}
 		cidade = null;
 		// HttpServer.stop();
+	}
+
+	public boolean getNitrogliceria() {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			return o.props[0] == 1;
+		}
+	}
+
+	public void setNitrogliceria(boolean value) {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			o.props[0] = value ? 1 : 0;
+		}
 	}
 }

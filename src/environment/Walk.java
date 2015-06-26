@@ -48,7 +48,7 @@ public class Walk {
 						transporting.longitude = source.longitude;
 					}
 			}
-			int rodado = Math.abs(lat_delta) + Math.abs(long_delta);
+			int rodado = lat_delta == 0 && long_delta == 0 ? 0 : 1;
 			acum_rodado += rodado;
 			chegou = rodado == 0;
 			this.stamp = new Date().getTime();
@@ -56,9 +56,9 @@ public class Walk {
 
 	}
 
-	public int km_rodado(){
-		int r=acum_rodado;
-		acum_rodado=0;
+	public int km_rodado() {
+		int r = acum_rodado;
+		acum_rodado = 0;
 		return r;
 	}
 }

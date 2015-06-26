@@ -24,8 +24,8 @@ public class TransportarPaciente extends Behaviour {
 	private AID hospistal;
 	private Walk walk;
 
-	public TransportarPaciente(Ambulancia amb,
-			Emergencia e, AID hospistal, Objeto endereco_hospital) {
+	public TransportarPaciente(Ambulancia amb, Emergencia e, AID hospistal,
+			Objeto endereco_hospital) {
 		super(amb);
 		this.hospistal = hospistal;
 		ambulancia = (Ambulancia) myAgent;
@@ -35,7 +35,8 @@ public class TransportarPaciente extends Behaviour {
 		walk = new Walk(Cidade.singleton.map_get(ambulancia.endereco),
 				endereco_hospital,
 				Cidade.singleton.map_get(emergencia.endereco),
-				ambulancia.velocidade);
+				ambulancia.velocidade
+						* (Cidade.central.getNitrogliceria() ? 180 : 100) / 100);
 		ambulancia.setStatusTransportarPacienteParaHospital(e);
 	}
 

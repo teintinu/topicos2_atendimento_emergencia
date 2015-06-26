@@ -23,7 +23,9 @@ public class BuscarPaciente extends Behaviour {
 		emergencia = e;
 		ambulancia.setStatusBuscarPaciente(e);
 		walk = new Walk(Cidade.singleton.map_get(ambulancia.endereco),
-				Cidade.singleton.map_get(emergencia.endereco), null, ambulancia.velocidade);
+				Cidade.singleton.map_get(emergencia.endereco), null, ambulancia.velocidade *
+				(Cidade.central.getNitrogliceria()?180:100)/100
+				);
 	}
 
 	@Override

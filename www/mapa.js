@@ -111,14 +111,18 @@ var Mapa = React.createClass({
                                 href: '#' + o.descricao
                             }, o.descricao)),
                             React.createElement('td', {}, o.lat + ',' + o.lng),
-                            React.createElement('td', {}, ['Livre',
-                                                       'Indo buscar paciente: ' + o.props[1] + (o.props[6] > 0 ? ' Manut#' + o.props[6] : ''),
-                                                       'Transportando paciente: ' + o.props[1] + (o.props[6] > 0 ? ' Manut#' + o.props[6] : ''),
-                                                       "Em manutencao st=" + o.props[6]
-                                                      ][o.props[0]]),
-                            React.createElement('td', {
-                                colspan: 2
-                            }, o.props[2] + '/' + o.props[3])
+                            React.createElement('td', {}, o.props[2]),
+                            React.createElement('td', {}, o.props[3]),
+                            React.createElement('td', {}, ['Ociosa',
+                                                       'Indo buscar paciente: ' + o.props[1] +
+                                (o.props[6] > 0 ? (o.props[6] == 1 ? ' (manutencao planejada)' : ' Manut#' + o.props[6]) : ''),
+                                                       'Transportando paciente: ' + o.props[1] + (o.props[6] > 0 ? (o.props[6] > 0 ? (o.props[6] == 1 ? ' (manutencao planejada)' : ' Manut#' + o.props[6]) : '') : ''),
+                                                       'Manutencao: '+(o.props[6] == 4 ? 'Procurando oficina' :
+                                                           o.props[6] == 5 ? 'Indo para oficina' :
+                                                           o.props[6] == 6 ? 'Em andamento' :
+                                                       "status=" + o.props[6])
+                                                      ][o.props[0]])
+
                             //                        React.createElement('td', {}, parseInt(o.props[4] / 1000) +
                             //                            's ' +
                             //                            parseInt(o.props[5] / 1000) +
@@ -132,12 +136,26 @@ var Mapa = React.createClass({
                     },
                     React.createElement('td', {}, "Ambulancias"),
                     React.createElement('td', {}, "Posicao"),
-                    React.createElement('td', {}, "Situacao"),
                     React.createElement('td', {
-                        colspan: 2
-                    }, "KM (total/manut)")
+                        colSpan: 2
+                    }, "KM (total/manut)"),
+                    React.createElement('td', {}, "Situacao")
+
                     //React.createElement('td', {}, "Tempo livre")
-                      )]))),
+                      )])).concat(self.state.objetos.sort(function (a, b) {
+                return a.descricao == b.descricao ? 0 : +(a.descricao > b.descricao) || -1
+            }).reduce(function (arr, o) {
+                if (o.tipo == 'central') {
+                    arr.push(React.createElement('tr', {className: 'titulo'},
+                        React.createElement('td', {}, 'Combustivel em uso'),
+                        React.createElement('td', {
+                            colSpan: 4,
+                            align: "right"
+                        }, ['Gasolina comum', 'Nitroglicerina'][o.props[0]])
+                    ));
+                }
+                return arr;
+            }, []))),
 
             React.createElement('div', {
                     className: 'mapa',
