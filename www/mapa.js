@@ -13,6 +13,7 @@ var Mapa = React.createClass({
         r.open("get", "mapa", true);
         r.onreadystatechange = function () {
             if (r.readyState != 4) return;
+            setTimeout(self.atualiza, 33);
 
             if (r.status == 200) {
                 var linhas = r.responseText.trim().split('\n');
@@ -49,8 +50,6 @@ var Mapa = React.createClass({
                 self.setState({
                     error: true
                 });
-
-            setTimeout(self.atualiza, 33);
 
         };
         r.send("");
@@ -139,6 +138,8 @@ var Mapa = React.createClass({
         var canvasX = 0;
         var canvasY = 0;
         var currentElement = event.target;
+        if (!event.target.classList.contains('mapa'))
+          return;
 
         do {
             totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
