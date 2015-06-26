@@ -107,6 +107,7 @@ public class AlocarLeito extends Behaviour {
 			try {
 				order.setConversationId(ontologia.Servicos.TratarPacientes);
 				order.setContentObject(emergencia);
+				order.setReplyWith("prop" + System.currentTimeMillis());
 				myAgent.send(order);
 				mt = MessageTemplate
 						.and(MessageTemplate
@@ -122,26 +123,27 @@ public class AlocarLeito extends Behaviour {
 
 			reply = myAgent.receive(mt);
 			if (reply != null) {
-				System.out.println("conf leito - reply ");
+
 				if (reply.getPerformative() == ACLMessage.INFORM) {
 					System.out.println(hospitalMaisProximo.getLocalName()
 							+ " informou que irá atender a emergencia");
+					Objeto endereco_hospital;
+					try {
+						endereco_hospital = Cidade.singleton.map_get((int) reply
+								.getContentObject());
+						ambulancia.addBehaviour(new TransportarPaciente(ambulancia,emergencia,
+								hospitalMaisProximo, endereco_hospital));
+					} catch (UnreadableException e) {
+						e.printStackTrace();
+					}
+					passo = HospitalPassos.TransportandoPaciente;
 					this.emergencia = null;
 				} else {
 					System.out
 							.println(hospitalMaisProximo.getLocalName()
 									+ " informou que nao irá pode atender a emergencia, tentando outra");
+					passo = HospitalPassos.PerguntarLeitosLivresAosHospitais;
 				}
-				Objeto endereco_hospital;
-				try {
-					endereco_hospital = Cidade.singleton.map_get((int) reply
-							.getContentObject());
-					ambulancia.addBehaviour(new TransportarPaciente(emergencia,
-							hospitalMaisProximo, endereco_hospital));
-				} catch (UnreadableException e) {
-					e.printStackTrace();
-				}
-				passo = HospitalPassos.TransportandoPaciente;
 			} else {
 				block();
 			}

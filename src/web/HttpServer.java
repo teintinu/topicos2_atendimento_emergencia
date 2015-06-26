@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import ontologia.entidades.Emergencia;
 import environment.Cidade;
 
 /**
@@ -27,16 +28,14 @@ import environment.Cidade;
  *
  * @author Dustin R. Callaway
  */
-public class HttpServer implements Runnable
-{
+public class HttpServer implements Runnable {
 
 	static final String WEB_ROOT = "www";
 	static final int PORT = 8080; // default port
 
-
 	@Override
 	public void run() {
-		ServerSocket serverConnect=null;
+		ServerSocket serverConnect = null;
 		try {
 			serverConnect = new ServerSocket(PORT);
 			System.out.println("\nListening for connections on port " + PORT
@@ -52,9 +51,8 @@ public class HttpServer implements Runnable
 			}
 		} catch (IOException e) {
 			System.err.println("Server error: " + e);
-		}
-		finally{
-			if (serverConnect!=null)
+		} finally {
+			if (serverConnect != null)
 				try {
 					serverConnect.close();
 				} catch (IOException e) {
@@ -63,7 +61,6 @@ public class HttpServer implements Runnable
 				}
 		}
 	}
-
 
 	private static boolean listenning = false;
 
@@ -99,7 +96,7 @@ class HttpRequest implements Runnable {
 		BufferedReader in = null;
 		String url = null;
 
-		OutputStream out=null;
+		OutputStream out = null;
 		try {
 			in = new BufferedReader(new InputStreamReader(
 					connect.getInputStream(), StandardCharsets.UTF_8));
@@ -112,6 +109,8 @@ class HttpRequest implements Runnable {
 
 			if ("/mapa".equals(url))
 				renderMapa(out);
+			else if (url.length()>16 && "/criaemergencia/".equals( url.substring(0, 16)))
+				criaemergencia(url);
 			else
 				serverFile(url, out);
 
@@ -134,7 +133,7 @@ class HttpRequest implements Runnable {
 		}
 
 		// create file object
-		File file = new File(HttpServer. WEB_ROOT, fileRequested);
+		File file = new File(HttpServer.WEB_ROOT, fileRequested);
 		// get length of file
 		int fileLength = (int) file.length();
 
@@ -172,9 +171,18 @@ class HttpRequest implements Runnable {
 	}
 
 	private void renderMapa(OutputStream outputStream) {
-		StringBuilder ret = new StringBuilder();
-		Cidade.singleton.toCSV(ret);
-		outputString(outputStream, "text/plain", ret.toString());
+		if (Cidade.singleton != null) {
+			StringBuilder ret = new StringBuilder();
+			Cidade.singleton.toCSV(ret);
+			outputString(outputStream, "text/plain", ret.toString());
+		}
+	}
+
+	private void criaemergencia(String url){
+		String s[]=url.substring(16).split(",");
+		int lat=Integer.parseInt(s[0]);
+		int lng=Integer.parseInt(s[1]);
+		new Emergencia(Cidade.singleton, "click", lat, lng);
 	}
 
 	private void outputString(OutputStream outputStream, String mime,

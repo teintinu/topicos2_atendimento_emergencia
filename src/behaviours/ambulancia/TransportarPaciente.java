@@ -21,23 +21,24 @@ public class TransportarPaciente extends Behaviour {
 	private AID hospistal;
 	private long lastTick;
 
-	public TransportarPaciente(Emergencia e, AID hospistal,
+	public TransportarPaciente(Ambulancia amb, Emergencia e, AID hospistal,
 			Objeto endereco_hospital) {
+		super(amb);
 		this.hospistal = hospistal;
 		ambulancia = (Ambulancia) myAgent;
 		emergencia = e;
 		this.endereco_hospital = endereco_hospital;
 		chegou = false;
-		ambulancia.setStatusTransportarPacienteParaHospital();
-		lastTick=new Date().getTime();
+		ambulancia.setStatusTransportarPacienteParaHospital(e);
+		lastTick = new Date().getTime();
 	}
 
 	@Override
 	public void action() {
 		long tick = new Date().getTime();
-		if (tick-lastTick<100)
+		if (tick - lastTick < 20)
 			return;
-		lastTick=tick;
+		lastTick = tick;
 		Objeto amb = Cidade.singleton.map_get(ambulancia.endereco);
 		Objeto e = Cidade.singleton.map_get(emergencia.endereco);
 		chegou = amb.walkTo(endereco_hospital);

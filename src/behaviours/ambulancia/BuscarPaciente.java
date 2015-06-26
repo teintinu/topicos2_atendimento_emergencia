@@ -22,14 +22,14 @@ public class BuscarPaciente extends Behaviour {
 		ambulancia = (Ambulancia) myAgent;
 		emergencia = e;
 		chegou = false;
-		ambulancia.setStatusBuscarPaciente();
+		ambulancia.setStatusBuscarPaciente(e);
 		lastTick = new Date().getTime();
 	}
 
 	@Override
 	public void action() {
 		long tick = new Date().getTime();
-		if (tick - lastTick < 25)
+		if (tick - lastTick < 20)
 			return;
 		lastTick = tick;
 		Objeto amb = Cidade.singleton.map_get(ambulancia.endereco);

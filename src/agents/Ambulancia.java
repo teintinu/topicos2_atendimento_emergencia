@@ -6,12 +6,11 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import ontologia.entidades.Emergencia;
-import ontologia.status.AmbulanciaStatus;
 import behaviours.ambulancia.ComunicacaoAmbulanciaCentral;
 import environment.Cidade;
+import environment.Objeto;
 
 public class Ambulancia extends Agent {
-	private AmbulanciaStatus status = AmbulanciaStatus.Livre;
 	public Integer endereco;
 
 	/**
@@ -26,7 +25,7 @@ public class Ambulancia extends Agent {
 
 		endereco = Cidade.singleton.map_create(getAID().getLocalName(),
 				"ambulancia", Cidade.singleton.tamanhoLat / 2,
-				Cidade.singleton.tamanhoLong / 2);
+				Cidade.singleton.tamanhoLong / 2,0,1);
 
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
@@ -57,25 +56,33 @@ public class Ambulancia extends Agent {
 		}
 	}
 
-	public AmbulanciaStatus getStatus() {
-		return status;
-	}
-
 	public void setStatusLivre() {
-		status = AmbulanciaStatus.Livre;
-		System.out.println(getAID().getLocalName()
-				+ ": Ambulância está livre e a postos");
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			o.pos=0;
+		}
 	}
 
-	public void setStatusBuscarPaciente() {
-		status = AmbulanciaStatus.IndoAtenderBuscarPaciente;
-		System.out.println(getAID().getLocalName()
-				+ ": Ambulância está indo buscar um paciente");
+	public void setStatusBuscarPaciente(Emergencia e) {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			o.pos=1;
+			o.max=e.endereco;
+		}
 	}
 	
-	public void setStatusTransportarPacienteParaHospital() {
-		status = AmbulanciaStatus.TransportandoPacienteParaHospital;
-		System.out.println(getAID().getLocalName()
-				+ ": Ambulância está levando paciente para hospital");
+	public void setStatusTransportarPacienteParaHospital(Emergencia e) {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			o.pos=2;
+			o.max=e.endereco;
+		}
+	}
+
+	public boolean livre() {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			return o.pos==0;
+		}
 	}
 }

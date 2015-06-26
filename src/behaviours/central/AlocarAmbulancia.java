@@ -39,11 +39,13 @@ public class AlocarAmbulancia extends Behaviour {
 		case PegaEmergenciaDaFila:
 			if (emergencia == null) {
 				emergencia = cidade.pegarEmergenciaParaAtender();
+				ambulanciaMaisProxima = null;
+				menorDistancia = 0;
 			}
 			if (emergencia != null) {
 				passo = AmbulanciaPassos.PerguntaEnderecoDasAmbulancias;
 				System.out.println("Nova emergencia para atender: "
-						+ emergencia.endereco);
+						+ emergencia.toString());
 			}
 			break;
 		case PerguntaEnderecoDasAmbulancias:
@@ -77,19 +79,13 @@ public class AlocarAmbulancia extends Behaviour {
 		case RecebeEnderecoDasAmbulancias:
 			ACLMessage reply = myAgent.receive(mt);
 			if (reply != null) {
-				System.out.println("Proposta de "
-						+ reply.getSender().getLocalName()
-						+ " para atender a emergencia");
 				if (reply.getPerformative() == ACLMessage.PROPOSE) {
 					try {
 						Objeto endereco = cidade.map_get((int) reply
 								.getContentObject());
 						System.out.println("Proposta de "
 								+ reply.getSender().getLocalName()
-								+ " endereco: " + endereco.toString());
-						System.out.println("Proposta de "
-								+ reply.getSender().getLocalName()
-								+ " emergencia " + emergencia);
+								+ " para atender a emergencia: "+emergencia.toString());
 						if (endereco != null) {
 							int distancia = endereco.distancia(cidade
 									.map_get(emergencia.endereco));
@@ -109,7 +105,11 @@ public class AlocarAmbulancia extends Behaviour {
 				}
 				repliesPending--;
 				if (repliesPending <= 0)
-					passo = AmbulanciaPassos.EncaminhaEmergenciaParaAmbulancia;
+					if (ambulanciaMaisProxima == null){
+						passo = AmbulanciaPassos.PegaEmergenciaDaFila;
+					}
+					else
+						passo = AmbulanciaPassos.EncaminhaEmergenciaParaAmbulancia;
 			} else {
 				block();
 			}
@@ -117,12 +117,13 @@ public class AlocarAmbulancia extends Behaviour {
 		case EncaminhaEmergenciaParaAmbulancia:
 			System.out.println("Aceitando a proposta de "
 					+ ambulanciaMaisProxima.getLocalName()
-					+ " para atender a emergencia");
+					+ " para atender a emergencia: "+emergencia.toString());
 			ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 			order.addReceiver(ambulanciaMaisProxima);
 			try {
 				order.setConversationId(ontologia.Servicos.TransportarPacientes);
 				order.setContentObject(emergencia);
+				order.setReplyWith("prop" + System.currentTimeMillis());
 				myAgent.send(order);
 				mt = MessageTemplate
 						.and(MessageTemplate
@@ -138,9 +139,8 @@ public class AlocarAmbulancia extends Behaviour {
 			reply = myAgent.receive(mt);
 			if (reply != null) {
 				if (reply.getPerformative() == ACLMessage.INFORM) {
-
 					System.out.println(ambulanciaMaisProxima.getLocalName()
-							+ " informou que irá atender a emergencia");
+							+ " informou que irá atender a emergencia: "+emergencia.toString());
 					this.emergencia = null;
 				} else {
 					System.out

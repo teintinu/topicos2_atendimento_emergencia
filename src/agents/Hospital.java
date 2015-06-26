@@ -3,6 +3,7 @@ package agents;
 import behaviours.ambulancia.ComunicacaoAmbulanciaCentral;
 import behaviours.hospital.ComunicacaoHospital;
 import environment.Cidade;
+import environment.Objeto;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -12,7 +13,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 public class Hospital extends Agent {
 
 	public Integer endereco;
-	public int leitos_em_uso = 0, qtde_leitos;
 
 	@Override
 	protected void setup() {
@@ -20,9 +20,9 @@ public class Hospital extends Agent {
 		if (args != null && args.length == 3) {
 			int lat = Integer.parseInt((String) args[0]);
 			int lng = Integer.parseInt((String) args[1]);
-			this.qtde_leitos = Integer.parseInt((String) args[2]);
+			int qtde_leitos = Integer.parseInt((String) args[2]);
 			endereco = Cidade.singleton.map_create(getAID().getLocalName(),
-					"hospital", lat, lng);
+					"hospital", lat, lng, 0, qtde_leitos);
 			System.out.println("Abrindo hospital: " + getAID().getLocalName());
 		} else {
 			System.out
@@ -45,7 +45,6 @@ public class Hospital extends Agent {
 			fe.printStackTrace();
 			doDelete();
 		}
-
 	}
 
 	@Override
@@ -53,5 +52,30 @@ public class Hospital extends Agent {
 		System.out.println("Fechando hospital: " + getAID().getLocalName());
 		if (endereco != null)
 			Cidade.singleton.map_remove(endereco);
+	}
+
+	public boolean ocuparLeito() {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			if (o.pos < o.max) {
+				o.pos++;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void desocuparLeito() {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			o.pos--;
+		}
+	}
+
+	public int leitos_disponiveis() {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			return o.max-o.pos;
+		}
 	}
 }

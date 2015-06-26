@@ -4,7 +4,6 @@ import jade.core.AID;
 
 import java.io.Serializable;
 
-import ontologia.status.EmergenciaStatus;
 import environment.Cidade;
 
 public class Emergencia implements Serializable{
@@ -14,8 +13,7 @@ public class Emergencia implements Serializable{
 	private static final long serialVersionUID = 2422214654185065271L;
 		
 	public Emergencia(Cidade cidade, String descricao, int latitude, int longitude) {
-		this.endereco =cidade.map_create(descricao, "emergencia", latitude, longitude);
-		this.status = EmergenciaStatus.Pendente;
+		this.endereco =cidade.map_create(descricao, "emergencia", latitude, longitude,0,0);
 		cidade.emergenciasPendentes.add(this);
 	}
 
@@ -31,13 +29,8 @@ public class Emergencia implements Serializable{
 	
 	private AID agente;
 	
-	public EmergenciaStatus getStatus() {
-		return status;
+	@Override
+	public String toString() {
+		return ""+ endereco;
 	}
-	
-	public void setStatus(EmergenciaStatus status) {
-		this.status = status;
-	}
-	
-	private EmergenciaStatus status;
 }

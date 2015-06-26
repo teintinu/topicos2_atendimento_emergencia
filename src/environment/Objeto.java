@@ -8,12 +8,16 @@ public class Objeto implements Serializable {
 	public String tipo;
 	public int latitude;
 	public int longitude;
+	public int pos;
+	public int max;
 
-	public Objeto(String descricao, String tipo, int latitude, int longitude) {
+	public Objeto(String descricao, String tipo, int latitude, int longitude, int pos, int max) {
 		this.descricao = descricao;
 		this.tipo = tipo;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.pos=pos;
+		this.max=max;
 	}
 	
 	@Override
@@ -32,6 +36,10 @@ public class Objeto implements Serializable {
 			s.append(latitude);
 			s.append(',');
 			s.append(longitude);
+			s.append(',');
+			s.append(pos);
+			s.append(',');
+			s.append(max);
 		}
 		s.append('\n');
 	}

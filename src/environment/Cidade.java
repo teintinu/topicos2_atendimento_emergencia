@@ -38,10 +38,10 @@ public class Cidade {
 	private int map_id = 0;
 
 	public int map_create(String descricao, String tipo, int latitude,
-			int longitude) {
+			int longitude, int pos, int max) {
 		synchronized (mapa) {
 			map_id++;
-			Objeto o = new Objeto(descricao, tipo, latitude, longitude);
+			Objeto o = new Objeto(descricao, tipo, latitude, longitude, pos, max);
 			mapa.put(map_id, o);
 			return map_id;
 		}

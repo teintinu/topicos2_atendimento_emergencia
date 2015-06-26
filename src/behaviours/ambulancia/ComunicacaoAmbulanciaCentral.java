@@ -7,7 +7,6 @@ import jade.lang.acl.UnreadableException;
 import java.io.IOException;
 
 import ontologia.entidades.Emergencia;
-import ontologia.status.AmbulanciaStatus;
 import agents.Ambulancia;
 
 public class ComunicacaoAmbulanciaCentral extends CyclicBehaviour {
@@ -22,7 +21,7 @@ public class ComunicacaoAmbulanciaCentral extends CyclicBehaviour {
 				Ambulancia amb = (Ambulancia) myAgent;
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REFUSE);
-				if (amb.getStatus() == AmbulanciaStatus.Livre)
+				if (amb.livre())
 					try {
 						reply.setContentObject(amb.endereco);
 						reply.setPerformative(ACLMessage.PROPOSE);
@@ -36,7 +35,7 @@ public class ComunicacaoAmbulanciaCentral extends CyclicBehaviour {
 				Ambulancia amb = (Ambulancia) myAgent;
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REFUSE);
-				if (amb.getStatus() == AmbulanciaStatus.Livre)
+				if (amb.livre())
 					try {
 						Emergencia e = (Emergencia) msg.getContentObject();
 						amb.addBehaviour(new BuscarPaciente(amb, e)); 

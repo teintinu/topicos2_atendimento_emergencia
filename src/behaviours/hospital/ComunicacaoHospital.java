@@ -7,7 +7,6 @@ import jade.lang.acl.UnreadableException;
 import java.io.IOException;
 
 import ontologia.entidades.Emergencia;
-import ontologia.status.AmbulanciaStatus;
 import agents.Ambulancia;
 import agents.Hospital;
 
@@ -24,7 +23,7 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 				Hospital hosp = (Hospital) myAgent;
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REFUSE);
-				if (hosp.leitos_em_uso < hosp.qtde_leitos)
+				if (hosp.leitos_disponiveis()>0)
 					try {
 						reply.setContentObject(hosp.endereco);
 						reply.setPerformative(ACLMessage.PROPOSE);
@@ -39,10 +38,9 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.REFUSE);
 				reply.setConversationId(ontologia.Servicos.TratarPacientes);
-				if (hosp.leitos_em_uso < hosp.qtde_leitos)
+				if (hosp.ocuparLeito())
 					try {
-						System.out.println("Hospital "+hosp.getLocalName()+" leitos "+hosp.leitos_em_uso+"+1 de "+hosp.qtde_leitos);
-						hosp.leitos_em_uso++;
+						System.out.println("Hospital "+hosp.getLocalName()+" reservou leito");
 						Emergencia e = (Emergencia) msg.getContentObject();
 						reply.setContentObject(hosp.endereco);
 						reply.setPerformative(ACLMessage.INFORM);
@@ -56,7 +54,7 @@ public class ComunicacaoHospital extends CyclicBehaviour {
 				try {
 					Emergencia e = (Emergencia) msg.getContentObject();
 					Hospital hosp = (Hospital) myAgent;
-					hosp.addBehaviour(new TrataPaciente(hosp, e, 2000));
+					hosp.addBehaviour(new TrataPaciente(hosp, e));
 				} catch (UnreadableException e) {
 					e.printStackTrace();
 				}

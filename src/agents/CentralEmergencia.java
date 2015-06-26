@@ -31,7 +31,7 @@ public class CentralEmergencia extends Agent {
 		cidade.central = this;
 
 		endereco = cidade.map_create("Central", "central",
-				cidade.tamanhoLat / 2, cidade.tamanhoLong / 2);
+				cidade.tamanhoLat / 2, cidade.tamanhoLong / 2,0,0);
 
 		addBehaviour(new SimularEmergencias(this, cidade));
 		this.cidade = cidade;

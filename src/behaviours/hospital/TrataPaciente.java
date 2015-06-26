@@ -10,15 +10,15 @@ public class TrataPaciente extends WakerBehaviour {
 
 	private Emergencia emergencia;
 
-	public TrataPaciente(Agent a, Emergencia emergencia, long timeout) {
-		super(a, timeout);
+	public TrataPaciente(Agent a, Emergencia emergencia) {
+		super(a, (int) (Math.random() * 10000)+5000);
 		this.emergencia = emergencia;
 	}
 
 	@Override
 	protected void onWake() {
 		Hospital hosp = (Hospital) myAgent;
-		hosp.leitos_em_uso--;
+		hosp.desocuparLeito();
 		Cidade.singleton.map_remove(emergencia.endereco);
 	}
 
