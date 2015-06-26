@@ -47,7 +47,8 @@ public class AlocarLeito extends Behaviour {
 				DFAgentDescription[] result = DFService.search(myAgent,
 						template);
 				for (int i = 0; i < result.length; ++i) {
-					System.out.println("Notificando hospital: "+result[i].getName());
+					System.out.println("Notificando hospital: "
+							+ result[i].getName());
 					cfp.addReceiver(result[i].getName());
 				}
 				repliesPending = result.length;
@@ -57,15 +58,14 @@ public class AlocarLeito extends Behaviour {
 			cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
 																	// value
 			myAgent.send(cfp);
-			mt = MessageTemplate
-					.and(MessageTemplate
-							.MatchConversationId(ontologia.Servicos.TratarPacientes),
-							MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+			mt = MessageTemplate.and(MessageTemplate
+					.MatchConversationId(ontologia.Servicos.TratarPacientes),
+					MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 
 			passo = HospitalPassos.RecebeInformacoesDosHospitais;
 			break;
 		case RecebeInformacoesDosHospitais:
-			
+
 			ACLMessage reply = myAgent.receive(mt);
 			if (reply != null) {
 				System.out.println("Proposta do hospital "
@@ -95,7 +95,10 @@ public class AlocarLeito extends Behaviour {
 				}
 				repliesPending--;
 				if (repliesPending <= 0)
-					passo = HospitalPassos.SelecionaHospital;
+					if (hospitalMaisProximo == null)
+						passo = HospitalPassos.PerguntarLeitosLivresAosHospitais;
+					else
+						passo = HospitalPassos.SelecionaHospital;
 			}
 			break;
 		case SelecionaHospital:
@@ -129,10 +132,11 @@ public class AlocarLeito extends Behaviour {
 							+ " informou que irá atender a emergencia");
 					Objeto endereco_hospital;
 					try {
-						endereco_hospital = Cidade.singleton.map_get((int) reply
-								.getContentObject());
-						ambulancia.addBehaviour(new TransportarPaciente(ambulancia,emergencia,
-								hospitalMaisProximo, endereco_hospital));
+						endereco_hospital = Cidade.singleton
+								.map_get((int) reply.getContentObject());
+						ambulancia.addBehaviour(new TransportarPaciente(
+								ambulancia, emergencia, hospitalMaisProximo,
+								endereco_hospital));
 					} catch (UnreadableException e) {
 						e.printStackTrace();
 					}
