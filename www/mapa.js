@@ -70,17 +70,20 @@ var Mapa = React.createClass({
                 React.createElement('td', {
                     colSpan: 5
                 }, "Objetos na tela por tipo")
-                )].concat(Object.keys(self.state.totais).map(function (o) {
+                )].concat(Object.keys(self.state.totais).sort().map(function (o) {
                 return React.createElement('tr', {},
                     React.createElement('td', {}, o),
                     React.createElement('td', {}, React.createElement('div', {
-                        className: o, key:"lengenda_"+o
+                        className: o,
+                        key: "lengenda_" + o
                     })),
                     React.createElement('td', {
                         colSpan: 3
                     }, self.state.totais[o])
                 );
-            })).concat(self.state.objetos.reduce(function (arr, o) {
+            })).concat(self.state.objetos.sort(function (a, b) {
+                return a.descricao == b.descricao ? 0 : +(a.descricao > b.descricao) || -1
+            }).reduce(function (arr, o) {
                 if (o.tipo == 'hospital') {
                     arr.push(React.createElement('tr', {},
                         React.createElement('td', {}, o.descricao),
@@ -98,45 +101,52 @@ var Mapa = React.createClass({
                     React.createElement('td', {
                         colSpan: 4
                     }, "Ocupacao"))
-                      ])).concat(self.state.objetos.reduce(function (arr, o) {
-                if (o.tipo == 'ambulancia') {
-                    arr.push(React.createElement('tr', {},
-                        React.createElement('td', {}, React.createElement('a', {
-                            href: '#' + o.descricao
-                        }, o.descricao)),
-                        React.createElement('td', {}, o.lat + ',' + o.lng),
-                        React.createElement('td', {}, ['Livre',
-                                                       'Indo buscar paciente: ' + o.props[1] + (o.props[6]>0?' Manut#'+o.props[6]:''),
-                                                       'Transportando paciente: ' + o.props[1]+ (o.props[6]>0?' Manut#'+o.props[6]:''),
-                                                       "Em manutencao st="+ o.props[6]
+                      ])).concat(self.state.objetos
+                .sort(function (a, b) {
+                    return a.descricao == b.descricao ? 0 : +(a.descricao > b.descricao) || -1
+                }).reduce(function (arr, o) {
+                    if (o.tipo == 'ambulancia') {
+                        arr.push(React.createElement('tr', {},
+                            React.createElement('td', {}, React.createElement('a', {
+                                href: '#' + o.descricao
+                            }, o.descricao)),
+                            React.createElement('td', {}, o.lat + ',' + o.lng),
+                            React.createElement('td', {}, ['Livre',
+                                                       'Indo buscar paciente: ' + o.props[1] + (o.props[6] > 0 ? ' Manut#' + o.props[6] : ''),
+                                                       'Transportando paciente: ' + o.props[1] + (o.props[6] > 0 ? ' Manut#' + o.props[6] : ''),
+                                                       "Em manutencao st=" + o.props[6]
                                                       ][o.props[0]]),
-                        React.createElement('td', {colspan:2}, o.props[2] + '/' + o.props[3])
-//                        React.createElement('td', {}, parseInt(o.props[4] / 1000) +
-//                            's ' +
-//                            parseInt(o.props[5] / 1000) +
-//                            's ' +
-//                            parseInt(o.props[4] / o.props[5] * 100) + '%')
-                    ));
-                }
-                return arr;
-            }, [React.createElement('tr', {
-                    className: 'titulo'
-                },
-                React.createElement('td', {}, "Ambulancias"),
-                React.createElement('td', {}, "Posicao"),
-                React.createElement('td', {}, "Situacao"),
-                React.createElement('td', {colspan:2}, "KM (total/manut)")
-                //React.createElement('td', {}, "Tempo livre")
+                            React.createElement('td', {
+                                colspan: 2
+                            }, o.props[2] + '/' + o.props[3])
+                            //                        React.createElement('td', {}, parseInt(o.props[4] / 1000) +
+                            //                            's ' +
+                            //                            parseInt(o.props[5] / 1000) +
+                            //                            's ' +
+                            //                            parseInt(o.props[4] / o.props[5] * 100) + '%')
+                        ));
+                    }
+                    return arr;
+                }, [React.createElement('tr', {
+                        className: 'titulo'
+                    },
+                    React.createElement('td', {}, "Ambulancias"),
+                    React.createElement('td', {}, "Posicao"),
+                    React.createElement('td', {}, "Situacao"),
+                    React.createElement('td', {
+                        colspan: 2
+                    }, "KM (total/manut)")
+                    //React.createElement('td', {}, "Tempo livre")
                       )]))),
 
             React.createElement('div', {
-                className: 'mapa',
-                onClick: this.criarEmergencia,
-                style: {
-                    width: self.state.cidade.tamanhoLat,
-                    height: self.state.cidade.tamanhoLong
-                }
-            },
+                    className: 'mapa',
+                    onClick: this.criarEmergencia,
+                    style: {
+                        width: self.state.cidade.tamanhoLat,
+                        height: self.state.cidade.tamanhoLong
+                    }
+                },
                 self.state.objetos.map(function (o) {
                     return React.createElement('div', {
                         id: o.descricao,
