@@ -24,6 +24,6 @@ public class UsarNitroglicerina extends TickerBehaviour {
 
 	@Override
 	protected void onTick() {
-		central.setNitrogliceria(Cidade.singleton.emergenciasPendentes.size() > 10);
+		central.setNitrogliceria(Cidade.singleton.emergenciasPendentes.size() > 5);
 	}
 }

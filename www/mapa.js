@@ -116,6 +116,8 @@ var Mapa = React.createClass({
                             React.createElement('td', {}, ['Ociosa',
                                                        'Indo buscar paciente: ' + o.props[1] +
                                 (o.props[6] > 0 ? (o.props[6] == 1 ? ' (manutencao planejada)' : ' Manut#' + o.props[6]) : ''),
+                                                           'Procurando vaga em hospital para paciente: ' + o.props[1] +
+                                (o.props[6] > 0 ? (o.props[6] == 1 ? ' (manutencao planejada)' : ' Manut#' + o.props[6]) : ''),
                                                        'Transportando paciente: ' + o.props[1] + (o.props[6] > 0 ? (o.props[6] > 0 ? (o.props[6] == 1 ? ' (manutencao planejada)' : ' Manut#' + o.props[6]) : '') : ''),
                                                        'Manutencao: '+(o.props[6] == 4 ? 'Procurando oficina' :
                                                            o.props[6] == 5 ? 'Indo para oficina' :
@@ -169,7 +171,7 @@ var Mapa = React.createClass({
                     return React.createElement('div', {
                         id: o.descricao,
                         className: o.tipo == 'ambulancia' ? o.tipo + " " + o.descricao : o.tipo,
-                        key: o.tipo + "_" + o.descricao,
+                       key: o.tipo + "_" + o.descricao,
                         title: o.descricao,
                         style: {
                             left: o.lat,

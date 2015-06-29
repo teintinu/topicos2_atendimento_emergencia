@@ -37,7 +37,7 @@ public class TransportarPaciente extends Behaviour {
 				Cidade.singleton.map_get(emergencia.endereco),
 				ambulancia.velocidade
 						* (Cidade.central.getNitrogliceria() ? 180 : 100) / 100);
-		ambulancia.setStatusTransportarPacienteParaHospital(e);
+		ambulancia.setStatusTransportePacienteParaHospital(e);
 	}
 
 	@Override

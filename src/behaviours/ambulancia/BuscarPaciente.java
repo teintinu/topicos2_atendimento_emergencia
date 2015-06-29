@@ -33,6 +33,7 @@ public class BuscarPaciente extends Behaviour {
 		walk.walk();
 		if (walk.chegou) {
 			System.out.println("Ambulancia chegou no local da emergencia");
+			ambulancia.setStatusProcurandoLeito(emergencia);
 			Cidade.central
 					.addBehaviour(new AlocarLeito(ambulancia, emergencia));
 		} else

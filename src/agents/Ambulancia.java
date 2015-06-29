@@ -65,7 +65,7 @@ public class Ambulancia extends Agent {
 		if (Cidade.singleton != null) {
 			if (endereco != null) {
 				Objeto o = Cidade.singleton.map_get(endereco);
-				if (o.props[PROP_STATUS] == 2)
+				if (o.props[PROP_STATUS] >= 1&&o.props[PROP_STATUS] <= 3)
 					TransportarPaciente.emergenciaSemAtendimento=o.props[PROP_EMERGENCIA];
 				Cidade.singleton.map_remove(endereco);
 			}
@@ -97,10 +97,18 @@ public class Ambulancia extends Agent {
 		}
 	}
 
-	public void setStatusTransportarPacienteParaHospital(Emergencia e) {
+	public void setStatusProcurandoLeito(Emergencia e) {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
 			o.props[PROP_STATUS] = 2;
+			o.props[PROP_EMERGENCIA] = e.endereco;
+		}
+	}
+
+	public void setStatusTransportePacienteParaHospital(Emergencia e) {
+		Objeto o = Cidade.singleton.map_get(endereco);
+		synchronized (o) {
+			o.props[PROP_STATUS] = 3;
 			o.props[PROP_EMERGENCIA] = e.endereco;
 		}
 	}
@@ -179,7 +187,7 @@ public class Ambulancia extends Agent {
 		synchronized (o) {
 			r = o.props[PROP_STATUS] == 0;
 			if (r) {
-				o.props[PROP_STATUS] = 3;
+				o.props[PROP_STATUS] = 4;
 				o.props[PROP_MANUT_STATUS] = 2;
 			}
 		}
@@ -189,7 +197,7 @@ public class Ambulancia extends Agent {
 	public void setComecouManutencao() {
 		Objeto o = Cidade.singleton.map_get(endereco);
 		synchronized (o) {
-			if (o.props[PROP_STATUS] == 3) {
+			if (o.props[PROP_STATUS] == 4) {
 				o.props[PROP_KM_MANUT] = 0;
 			}
 		}
@@ -199,7 +207,7 @@ public class Ambulancia extends Agent {
 		Objeto o = Cidade.singleton.map_get(endereco);
 
 		synchronized (o) {
-			if (o.props[PROP_STATUS] == 3) {
+			if (o.props[PROP_STATUS] == 4) {
 				o.props[PROP_STATUS] = 0;
 				o.props[PROP_MANUT_STATUS] = 0;
 			}

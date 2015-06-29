@@ -125,7 +125,7 @@ public class FazerManutencaoAmbulancia extends Behaviour {
 			if (walk.chegou) {
 				ambulancia.setComecouManutencao();
 				stampManut = new Date().getTime()
-						+ ((int) Math.random() * 10000 + 5000);
+						+ ((int) Math.random() * 10000 + 10000);
 				passo = EXECUTANDO_MANUTENCAO;
 				ambulancia.setManutStatus(passo);
 			} else
